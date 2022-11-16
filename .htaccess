@@ -1,0 +1,14 @@
+IndexIgnore *
+
+Options +MultiViews
+
+#Custom Error 403 
+ErrorDocument 403 http://localhost/bk-elearning/error?page=403
+#Custom Error 404 
+ErrorDocument 404 http://localhost/bk-elearning/error?page=404
+#Custom Error 405 
+ErrorDocument 405 http://localhost/bk-elearning/error?page=405
+#Custom Error 500 
+ErrorDocument 500 http://localhost/bk-elearning/error?page=500
+#Custom Error 503 
+ErrorDocument 503 http://localhost/bk-elearning/error?page=503

@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Smart Wizard - a JavaScript jQuery Step Wizard plugin</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="../dist/css/bootstrap.min.css" >
+
+    <!-- Include SmartWizard CSS -->
+    <link href="../dist/css/smart_wizard.css" rel="stylesheet" type="text/css" />
+
+    <!-- Optional SmartWizard theme -->
+    <link href="../dist/css/smart_wizard_theme_circles.css" rel="stylesheet" type="text/css" />
+    <link href="../dist/css/smart_wizard_theme_arrows.css" rel="stylesheet" type="text/css" />
+    <link href="../dist/css/smart_wizard_theme_dots.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div class="container">
+
+      <!-- External toolbar sample -->
+      <div class="row d-flex align-items-center p-3 my-3 text-white-50">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+          Click to launch Smart Wizard modal
+        </button>
+      </div>
+
+      <!-- Modal -->
+      <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Smart Wizard modal</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+
+              <!-- Smart Wizard HTML -->
+              <div id="smartwizard">
+                  <ul>
+                      <li><a href="#step-1">Step Title<br /><small>Step description</small></a></li>
+                      <li><a href="#step-2">Step Title<br /><small>Step description</small></a></li>
+                      <li><a href="#step-3">Step Title<br /><small>Step description</small></a></li>
+                      <li><a href="#step-4">Step Title<br /><small>Step description</small></a></li>
+                  </ul>
+
+                  <div>
+                      <div id="step-1" class="">
+                        <h2>A. REGISTRATION</h2>
+                        <small>Please fill up this form correctly.</small>
+                        <div id="form-step-0" role="form" data-toggle="validator">
+                            <div class="form-group">
+                                <label for="email">Gradelevel:</label>
+                                <select class="form-control">
+                                  <option>7</option>
+                                  <option>10</option>
+                                </select>
+                                <div class="help-block with-errors"></div>
+                            </div>
+                        </div>
+                          <div id="form-step-0" role="form" data-toggle="validator">
+                            <div class="form-group">
+                                <label for="email">Name:</label>
+                                <input type="text" class="form-control" name="email" id="email" placeholder="" required>
+                                <div class="help-block with-errors"></div>
+                            </div>
+                        </div>
+                          <div id="form-step-0" role="form" data-toggle="validator">
+                            <div class="form-group">
+                                <label for="email">Email:</label>
+                                <input type="email" class="form-control" name="email" id="email" placeholder="" required>
+                                <div class="help-block with-errors"></div>
+                            </div>
+                        </div>
+                          <div id="form-step-0" role="form" data-toggle="validator">
+                            <div class="form-group">
+                                <label for="email">BOB:</label>
+                                <input type="date" class="form-control" name="email" id="email" placeholder="" required>
+                                <div class="help-block with-errors"></div>
+                            </div>
+                        </div>
+                         <div id="form-step-0" role="form" data-toggle="validator">
+                            <div class="form-group">
+                                <label for="email">AGE:</label>
+                                <input type="text" class="form-control" name="email" id="email" placeholder="" required>
+                                <div class="help-block with-errors"></div>
+                            </div>
+                        </div>
+                      </div>
+                      <div id="step-2" class="">
+                          Step Content
+                      </div>
+                      <div id="step-3" class="">
+                          Step Content
+                      </div>
+                      <div id="step-4" class="">
+                          Step Content
+                      </div>
+                  </div>
+              </div>
+
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-secondary" id="prev-btn" type="button">Previous</button>
+              <button class="btn btn-secondary" id="next-btn" type="button">Next</button>
+              <button class="btn btn-primary" id="finish-btn" type="submit">Finish</button>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+    </div>
+
+      <!-- jQuery Versions -->
+    <script src="../dist/js/jquery-3.3.1.min.js"></script>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="../dist/js/bootstrap.min.js" ></script>
+
+    <!-- Bootstrap JavaScript -->
+
+    <!-- Include SmartWizard JavaScript source -->
+    <script type="text/javascript" src="../dist/js/jquery.smartWizard.min.js"></script>
+
+    <script type="text/javascript">
+      function getAge(DOB) {
+          var today = new Date();
+          var birthDate = new Date(DOB);
+          var age = today.getFullYear() - birthDate.getFullYear();
+          var m = today.getMonth() - birthDate.getMonth();
+          if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+              age = age - 1;
+          }
+
+          return age;
+      }
+    // var age_input = $('#age_input').val();
+    // $('#calculated_age').value(getAge(age_input));
+
+        $(document).ready(function(){
+
+            // Step show event
+            $("#smartwizard").on("showStep", function(e, anchorObject, stepNumber, stepDirection, stepPosition) {
+               //alert("You are on step "+stepNumber+" now");
+               if(stepPosition === 'first'){
+                   $("#prev-btn").addClass('disabled');
+                   $("#finish-btn").hide();
+               }else if(stepPosition === 'final'){
+                   $("#next-btn").hide();
+                   $("#finish-btn").show();
+               }else{
+                   $("#finish-btn").hide();
+                   $("#next-btn").show();
+                   $("#prev-btn").removeClass('disabled');
+               }
+            });
+
+            // Toolbar extra buttons
+            var btnFinish = $('<button></button>').text('Finish')
+                                             .addClass('btn btn-info')
+                                             .on('click', function(){ alert('Finish Clicked'); });
+            var btnCancel = $('<button></button>').text('Cancel')
+                                             .addClass('btn btn-danger')
+                                             .on('click', function(){ $('#smartwizard').smartWizard("reset"); });
+
+            // Smart Wizard 1
+            $('#smartwizard').smartWizard({
+                    selected: 0,
+                    theme: 'arrows',
+                    transitionEffect:'fade',
+                    showStepURLhash: false,
+                    toolbarSettings: {toolbarPosition: 'none',
+                                      toolbarExtraButtons: [btnFinish, btnCancel]
+                                    }
+            });
+
+            // External Button Events
+
+            $("#prev-btn").on("click", function() {
+                // Navigate previous
+                $('#smartwizard').smartWizard("prev");
+                return true;
+            });
+
+            $("#next-btn").on("click", function() {
+                // Navigate next
+                $('#smartwizard').smartWizard("next");
+                return true;
+            });
+            
+            $("#finish-btn").on("click", function() {
+                alert('Finish Clicked');
+                return true;
+            });
+
+        });
+    </script>
+</body>
+</html>
