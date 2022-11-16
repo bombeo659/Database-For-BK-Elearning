@@ -5,44 +5,69 @@ session_start();
 
 if (isset($_POST['action'])) {
     $output = array();
-    // CHANGE PASSWORD
+    // change password
     if ($_POST['action'] == "change_password") {
-        $user_ID = $_SESSION['user_ID'];
+        $user_id = $_SESSION['user_id'];
         $update_password_old = $_REQUEST["update_password_old"];
         $update_password_new = $_REQUEST["update_password_new"];
         $update_password_newconfirm = $_REQUEST["update_password_newconfirm"];
 
         if ($update_password_new === $update_password_newconfirm) {
-            $stmt = $profile->runQuery("SELECT * FROM `user_account` WHERE user_ID = :user_ID LIMIT 1");
-            $stmt->execute(array(':user_ID' => $user_ID));
+            $stmt = $profile->runQuery("SELECT * FROM `user_account` WHERE user_id = :user_id LIMIT 1");
+            $stmt->execute(array(':user_id' => $user_id));
             $userRow = $stmt->fetch(PDO::FETCH_ASSOC);
             if ($stmt->rowCount() == 1) {
-                if (password_verify($update_password_old, $userRow['user_Pass'])) {
+                if (password_verify($update_password_old, $userRow['user_pass'])) {
                     $new_password = password_hash($update_password_newconfirm, PASSWORD_DEFAULT);
-                    $stmt = $profile->runQuery("UPDATE `user_account` SET `user_Pass` = :user_Pass WHERE `user_account`.`user_ID` = :user_ID");
-                    $stmt->bindparam(":user_ID", $user_ID);
-                    $stmt->bindparam(":user_Pass", $new_password);
+                    $stmt = $profile->runQuery("UPDATE `user_account` SET `user_pass` = :user_pass WHERE `user_account`.`user_id` = :user_id");
+                    $stmt->bindparam(":user_id", $user_id);
+                    $stmt->bindparam(":user_pass", $new_password);
                     $stmt->execute();
                     $output['success'] = "Password changed successfully!";
                 } else {
-                    $output['error'] = "Old Password not match";
+                    $output['error'] = "Old Password not match!";
                 }
             }
         } else {
-            $output['error'] = "Password not match";
+            $output['error'] = "Password not match!";
         }
     }
 
-    //CHANGE PROFILE PICTURE
-    else if ($_POST['action'] == "change_picture") {
-        $user_ID = $_SESSION['user_ID'];
+    // change profile picture
+    if ($_POST['action'] == "change_picture") {
+        $user_id = $_SESSION['user_id'];
+
+        $user_type = "";
+        $user_type_acro = "";
+        if ($_SESSION['lvl_ID'] == "1") {
+            $user_type = "student";
+            $id_type = "sd";
+        }
+        if ($_SESSION['lvl_ID'] == "2") {
+            $user_type = "instructor";
+            $id_type = "ind";
+        }
+        if ($_SESSION['lvl_ID'] == "3") {
+            $user_type = "admin";
+            $id_type = "ad";
+        }
+
+        $query = "SELECT * FROM `" . $user_type . "s_has_account` WHERE `user_id` = " . $user_id;
+        $stmt = $profile->runQuery($query);
+        $stmt->execute();
+        $userRow = $stmt->fetch(PDO::FETCH_ASSOC);
+
         if (isset($_FILES['change_profile']['tmp_name'])) {
             $new_img = addslashes(file_get_contents($_FILES['change_profile']['tmp_name']));
-            $stmt = $profile->runQuery("UPDATE `user_account` SET `user_Img` = '$new_img' WHERE `user_ID` = $user_ID ;");
+            $stmt = $profile->runQuery("UPDATE `user_account` SET `user_img` = '$new_img' WHERE `user_id` = $user_id;");
             $result = $stmt->execute();
+
+            $stmt = $profile->runQuery("UPDATE `" . $user_type . "_details` SET `" . $id_type . "_img` = '.$new_img' WHERE `" . $id_type . "_id` = " . $userRow[$id_type .'_id'] .";");
+            $result = $stmt->execute();
+
             if (!empty($result)) {
                 $output['success'] = "Change profile image succesfully!";
-                $profile->getUserPic($user_ID);
+                $profile->getUserPic($user_id);
             } else {
                 $output['error'] =  "Error updating record: " . mysqli_error($conn);
             }
@@ -51,24 +76,30 @@ if (isset($_POST['action'])) {
         }
     } 
 
-    //CHANGE EMAIL
-    else if ($_POST['action'] == "change_email") {
+    // change email
+    if ($_POST['action'] == "change_email") {
         $user_type = "";
         $user_type_acro = "";
         if ($_SESSION['lvl_ID'] == "1") {
             $user_type = "student";
-            $id_type = "rsd";
+            $id_type = "sd";
         }
         if ($_SESSION['lvl_ID'] == "2") {
             $user_type = "instructor";
-            $id_type = "rid";
+            $id_type = "ind";
         }
         if ($_SESSION['lvl_ID'] == "3") {
             $user_type = "admin";
-            $id_type = "rad";
+            $id_type = "ad";
         }
         $update_email =  $_REQUEST["update_email"];
-        $query = "UPDATE `record_" . $user_type . "_details` SET `" . $id_type . "_Email` = '" . $update_email . "' WHERE `user_ID` = " . $_SESSION['user_ID'];
+
+        $query = "SELECT * FROM `" . $user_type . "s_has_account` WHERE `user_id` = " . $_SESSION['user_id'];
+        $stmt = $profile->runQuery($query);
+        $stmt->execute();
+        $userRow = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $query = "UPDATE `" . $user_type . "_details` SET `" . $id_type . "_email` = '" . $update_email . "' WHERE `" . $id_type . "_id` = " . $userRow[$id_type .'_id'] ;
         $stmt = $profile->runQuery($query);
         $result = $stmt->execute();
 
@@ -79,24 +110,30 @@ if (isset($_POST['action'])) {
         }
     } 
     
-    // CHANGE ADDRESS
-    else if ($_POST['action'] == "change_address") {
+    // change address
+    if ($_POST['action'] == "change_address") {
         $user_type = "";
         $user_type_acro = "";
         if ($_SESSION['lvl_ID'] == "1") {
             $user_type = "student";
-            $id_type = "rsd";
+            $id_type = "sd";
         }
         if ($_SESSION['lvl_ID'] == "2") {
             $user_type = "instructor";
-            $id_type = "rid";
+            $id_type = "ind";
         }
         if ($_SESSION['lvl_ID'] == "3") {
             $user_type = "admin";
-            $id_type = "rad";
+            $id_type = "ad";
         }
         $update_address =  $_REQUEST["update_address"];
-        $query = "UPDATE `record_" . $user_type . "_details` SET `" . $id_type . "_Address` = '" . $update_address . "' WHERE `user_ID` = " . $_SESSION['user_ID'];
+
+        $query = "SELECT * FROM `" . $user_type . "s_has_account` WHERE `user_id` = " . $_SESSION['user_id'];
+        $stmt = $profile->runQuery($query);
+        $stmt->execute();
+        $userRow = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $query = "UPDATE `" . $user_type . "_details` SET `" . $id_type . "_address` = '" . $update_address . "' WHERE `" . $id_type . "_id` = " . $userRow[$id_type .'_id'];
         $stmt = $profile->runQuery($query);
         $result = $stmt->execute();
 
@@ -108,5 +145,6 @@ if (isset($_POST['action'])) {
     } else {
         $output['error'] = "Unexpected Error";
     }
+    
     echo json_encode($output);
 }

@@ -329,6 +329,8 @@ $pageTitle = "Dashboard";
             var profileimg = '';
             if (document.getElementById("change_profile").files.length == 0) {
                 console.log("no files selected");
+                alertify.alert("No files selected").setHeader("Change Picture");
+                return;
             } else {
                 profileimg = $('#btn_change_picture').val();
             }
@@ -340,6 +342,7 @@ $pageTitle = "Dashboard";
                 contentType: false,
                 processData: false,
                 success: function(data) {
+                    console.log(data);
                     var newdata = JSON.parse(data);
                     if (newdata.success) {
                         alertify.alert(newdata.success).setHeader('Change Picture');
@@ -349,6 +352,7 @@ $pageTitle = "Dashboard";
                     } else {
                         alertify.alert(newdata.error).setHeader('Change Picture');
                     }
+                    $('#change_picture_form')[0].reset();
                 }
             });
         });
@@ -372,6 +376,7 @@ $pageTitle = "Dashboard";
                     } else {
                         alertify.alert(newdata.error).setHeader('Change Password');
                     }
+                    $('#change_password_form')[0].reset();
                 }
             });
         });
@@ -397,6 +402,7 @@ $pageTitle = "Dashboard";
                     } else {
                         alertify.alert(newdata.error).setHeader('Change Email');
                     }
+                    $('#change_email_form')[0].reset();
                 }
             });
         });
@@ -422,6 +428,7 @@ $pageTitle = "Dashboard";
                     } else {
                         alertify.alert(newdata.error).setHeader('Change address');
                     }
+                    $('#change_address_form')[0].reset();
                 }
             });
         });
