@@ -107,6 +107,7 @@ include('x-script.php');
                 } else {
                     alertify.alert(newdata.error).setHeader('Error Login');
                 }
+                $("#login_form")[0].reset();
             }
         });
 

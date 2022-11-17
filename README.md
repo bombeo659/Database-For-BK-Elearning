@@ -30,7 +30,10 @@ git clone https://github.com/bombeo659/Database-For-BK-Elearning.git
 ## Demo credentials 
 | Username       | Password       | Type           |
 |----------------|----------------|----------------|
-|admin           |admin           | admin          |
+|admin           |password        | admin          |
+|1234500         |password        | teacher        |
+|1915676         |password        | student        |
+|1915886         |password        | student        |
 
 
 Browser Support
