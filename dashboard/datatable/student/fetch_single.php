@@ -3,49 +3,43 @@ require_once('../class-function.php');
 $student = new DTFunction();
 
 if (isset($_POST['action'])) {
-
     $output = array();
     $stmt = $student->runQuery("SELECT 
-`rsd`.`rsd_ID`,
-`rsd`.`rsd_Img`,
-`rsd`.`rsd_StudNum`,
-`rsd`.`rsd_FName`,
-`rsd`.`rsd_MName`,
-`rsd`.`rsd_LName`,
-`rsd`.`rsd_Bday`,
-`rs`.`sex_ID`,
-`rm`.`marital_ID`,
-`sf`.`suffix_ID`,
-`rsd`.`rsd_Address`,
-`rsd`.`rsd_Email`
-FROM `record_student_details` `rsd`
-LEFT JOIN `ref_marital` `rm` ON `rm`.`marital_ID` = `rsd`.`marital_ID`
-LEFT JOIN `ref_sex` `rs` ON `rs`.`sex_ID` = `rsd`.`sex_ID`
-LEFT JOIN `ref_suffixname` `sf` ON `sf`.`suffix_ID` = `rsd`.`suffix_ID`
-WHERE rsd.rsd_ID =  '" . $_POST["student_ID"] . "' 
-			LIMIT 1");
+    `sd`.`sd_id`,
+    `sd`.`sd_img`,
+    `sd`.`sd_studnum`,
+    `sd`.`sd_fname`,
+    `sd`.`sd_mname`,
+    `sd`.`sd_lname`,
+    `sd`.`sd_bday`,
+    `sd`.`sd_gender`,
+    `sd`.`sd_address`,
+    `sd`.`sd_email`,
+    `sha`.`user_id`
+    FROM `student_details` `sd`
+    LEFT JOIN `students_has_account` `sha` ON `sha`.`sd_id` = `sd`.`sd_id`
+    WHERE sd.sd_id =  '" . $_POST["student_id"] . "' LIMIT 1");
+    
     $stmt->execute();
     $result = $stmt->fetchAll();
-    foreach ($result as $row) {
 
-        if (!empty($row['rsd_Img'])) {
-            $s_img = 'data:image/jpeg;base64,' . base64_encode($row['rsd_Img']);
+    foreach ($result as $row) {
+        if (!empty($row['sd_img'])) {
+            $s_img = 'data:image/jpeg;base64,' . base64_encode($row['sd_img']);
         } else {
             $s_img = "../assets/img/users/default.jpg";
         }
 
-        $output["rsd_ID"] = $row["rsd_ID"];
+        $output["sd_id"] = $row["sd_id"];
         $output["student_img"] = $s_img;
-        $output["student_lrn"] = $row["rsd_StudNum"];
-        $output["student_fname"] = $row["rsd_FName"];
-        $output["student_mname"] = $row["rsd_MName"];
-        $output["student_lname"] = $row["rsd_LName"];
-        $output["student_bday"] = $row["rsd_Bday"];
-        $output["student_suffix"] = $row["suffix_ID"];
-        $output["student_sex"] = $row["sex_ID"];
-        $output["student_marital"] = $row["marital_ID"];
-        $output["student_email"] = $row["rsd_Email"];
-        $output["student_address"] = $row["rsd_Address"];
+        $output["student_lrn"] = $row["sd_studnum"];
+        $output["student_fname"] = $row["sd_fname"];
+        $output["student_mname"] = $row["sd_mname"];
+        $output["student_lname"] = $row["sd_lname"];
+        $output["student_bday"] = $row["sd_bday"];
+        $output["student_sex"] = $row["sd_gender"];
+        $output["student_email"] = $row["sd_email"];
+        $output["student_address"] = $row["sd_address"];
     }
 
     echo json_encode($output);

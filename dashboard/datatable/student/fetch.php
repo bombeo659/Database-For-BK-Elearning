@@ -6,37 +6,35 @@ $query = '';
 $output = array();
 $query .= " 
 SELECT 
-`rsd`.`rsd_ID`,
-`rsd`.`user_ID`,
-`rsd`.`rsd_Img`,
-`rsd`.`rsd_StudNum`,
-`rsd`.`rsd_FName`,
-`rsd`.`rsd_MName`,
-`rsd`.`rsd_LName`,
-`rs`.`sex_Name`,
-`rm`.`marital_Name`,
-`sf`.`suffix`
+`sd`.`sd_id`,
+`sd`.`sd_img`,
+`sd`.`sd_studnum`,
+`sd`.`sd_fname`,
+`sd`.`sd_mname`,
+`sd`.`sd_lname`,
+`sd`.`sd_gender`,
+`sha`.`user_id`
 ";
-$query .= " FROM `record_student_details` `rsd`
-LEFT JOIN `ref_marital` `rm` ON `rm`.`marital_ID` = `rsd`.`marital_ID`
-LEFT JOIN `ref_sex` `rs` ON `rs`.`sex_ID` = `rsd`.`sex_ID`
-LEFT JOIN `ref_suffixname` `sf` ON `sf`.`suffix_ID` = `rsd`.`suffix_ID`";
+$query .= " FROM `student_details` `sd`
+LEFT JOIN `students_has_account` `sha` ON `sha`.`sd_id` = `sd`.`sd_id`";
+
+$query .= ' WHERE ';
 
 if (isset($_POST["search"]["value"])) {
-    $query .= ' WHERE rsd_ID LIKE "%' . $_POST["search"]["value"] . '%" ';
-    $query .= ' OR rsd_StudNum LIKE "%' . $_POST["search"]["value"] . '%" ';
-    $query .= ' OR rsd_FName LIKE "%' . $_POST["search"]["value"] . '%" ';
-    $query .= ' OR rsd_MName LIKE "%' . $_POST["search"]["value"] . '%" ';
-    $query .= ' OR rsd_LName LIKE "%' . $_POST["search"]["value"] . '%" ';
-    $query .= ' OR suffix LIKE "%' . $_POST["search"]["value"] . '%" ';
-    $query .= ' OR sex_Name LIKE "%' . $_POST["search"]["value"] . '%" ';
+    // $query .= ' sd_id LIKE "%' . $_POST["search"]["value"] . '%" ';
+    $query .= ' sd_studnum LIKE "%' . $_POST["search"]["value"] . '%" ';
+    $query .= ' OR sd_fname LIKE "%' . $_POST["search"]["value"] . '%" ';
+    $query .= ' OR sd_mname LIKE "%' . $_POST["search"]["value"] . '%" ';
+    $query .= ' OR sd_lname LIKE "%' . $_POST["search"]["value"] . '%" ';
+    $query .= ' OR sd_gender LIKE "%' . $_POST["search"]["value"] . '%" ';
 }
 
 if (isset($_POST["order"])) {
     $query .= ' ORDER BY ' . $_POST['order']['0']['column'] . ' ' . $_POST['order']['0']['dir'] . ' ';
 } else {
-    $query .= ' ORDER BY rsd_FName ASC ';
+    $query .= ' ORDER BY sd_fname ASC ';
 }
+
 if ($_POST["length"] != -1) {
     $query .= ' LIMIT ' . $_POST['start'] . ', ' . $_POST['length'];
 }
@@ -48,23 +46,17 @@ $data = array();
 $filtered_rows = $statement->rowCount();
 $i = 1;
 foreach ($result as $row) {
-    if ($row["suffix"] == "N/A") {
-        $suffix = "";
+    if ($row["sd_mname"] == " " || $row["sd_mname"] == NULL || empty($row["sd_mname"])) {
+        $mname = "";
     } else {
-        $suffix = $row["suffix"];
+        $mname = $row["sd_mname"];
     }
 
-    if ($row["rsd_MName"] == " " || $row["rsd_MName"] == NULL || empty($row["rsd_MName"])) {
-        $mname = " ";
-    } else {
-        $mname = substr($row["rsd_MName"], 0, 1) . '. ';
-    }
-
-    if (empty($row["user_ID"])) {
+    if (empty($row["user_id"])) {
         $reg = "<span class='badge badge-danger'>Unregistered</span>";
         $acreg = "UN";
         $btnrg = '
-		 <button type="button" class="btn btn-success btn-sm gen_account" id="' . $row["rsd_ID"] . '"><i class="icon-key" style="font-size: 20px;"></i></button>';
+		 <button type="button" class="btn btn-success btn-sm gen_account" id="' . $row["sd_id"] . '"><i class="icon-key" style="font-size: 20px;"></i></button>';
     } else {
         $reg = "<span class='badge badge-success'>Registered</span>";
         $acreg = "RG";
@@ -72,18 +64,17 @@ foreach ($result as $row) {
     }
     $sub_array = array();
     $sub_array[] = $i;
-    $sub_array[] = $row["rsd_ID"];
-    $sub_array[] =  $row["rsd_StudNum"];
-    $sub_array[] =  $row["rsd_FName"] . ' ' . $mname . $row["rsd_LName"] . ' ' . $suffix;
-    $sub_array[] =  $row["sex_Name"];
-    $sub_array[] =  $row["marital_Name"];
+    $sub_array[] = $row["sd_id"];
+    $sub_array[] =  $row["sd_studnum"];
+    $sub_array[] =  $row["sd_fname"] . ' ' . $row["sd_lname"] . ' ' .$mname;
+    $sub_array[] =  $row["sd_gender"];
     $sub_array[] =  $reg;
 
     $sub_array[] = '
     <div class="" role="group" aria-label="Basic example" >
-        <button type="button" class="btn btn-info btn-sm view" id="' . $row["rsd_ID"] . '">View</button>
-        <button type="button" class="btn btn-primary btn-sm edit" acreg="' . $acreg . '"  id="' . $row["rsd_ID"] . '">Edit</button>
-        <button type="button" class="btn btn-danger btn-sm delete" id="' . $row["rsd_ID"] . '">Delete</button>
+        <button type="button" class="btn btn-info btn-sm view" id="' . $row["sd_id"] . '">View</button>
+        <button type="button" class="btn btn-primary btn-sm edit" acreg="' . $acreg . '"  id="' . $row["sd_id"] . '">Edit</button>
+        <button type="button" class="btn btn-danger btn-sm delete" id="' . $row["sd_id"] . '">Delete</button>
         ' . $btnrg . '
     </div>
     ';
@@ -91,7 +82,7 @@ foreach ($result as $row) {
     $i++;
 }
 
-$q = "SELECT * FROM `record_student_details`";
+$q = "SELECT * FROM `student_details`";
 $filtered_rec = $student->get_total_all_records($q);
 
 $output = array(

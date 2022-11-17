@@ -113,7 +113,6 @@ $pageTitle = "Manage Student";
                                 <th>Student ID</th>
                                 <th>Name</th>
                                 <th>Sex</th>
-                                <th>Marital</th>
                                 <th>Account Status</th>
                                 <th></th>
                             </tr>
@@ -151,46 +150,49 @@ $pageTitle = "Manage Student";
                                                 <label for="student_lrn">Student ID<span class="text-danger">*</span></label>
                                                 <input type="number" class="form-control" id="student_lrn" name="student_lrn" placeholder="" value="" required="">
                                             </div>
-                                            <div class="form-group col-md-3">
+                                            <div class="form-group col-md-4">
                                                 <label for="student_fname">First Name<span class="text-danger">*</span></label>
                                                 <input type="text" class="form-control" id="student_fname" name="student_fname" placeholder="" value="" required="">
                                             </div>
-                                            <div class="form-group col-md-3">
+                                            <div class="form-group col-md-4">
                                                 <label for="student_mname">Middle Name<span class="text-danger">*</span></label>
                                                 <input type="text" class="form-control" id="student_mname" name="student_mname" placeholder="" value="" required="">
                                             </div>
-                                            <div class="form-group col-md-3">
+                                            <div class="form-group col-md-4">
                                                 <label for="student_lname">Last Name<span class="text-danger">*</span></label>
                                                 <input type="text" class="form-control" id="student_lname" name="student_lname" placeholder="" value="" required="">
                                             </div>
-                                            <div class="form-group col-md-3">
+                                            <!-- <div class="form-group col-md-3">
                                                 <label for="student_suffix">Suffix<span class="text-danger">*</span></label>
                                                 <select class="form-control" id="student_suffix" name="student_suffix">
                                                     <?php
-                                                    $auth_user->user_suffix_option();
+                                                    //$auth_user->user_suffix_option();
                                                     ?>
                                                 </select>
-                                            </div>
-                                            <div class="form-group col-md-4">
+                                            </div> -->
+                                            <div class="form-group col-md-6">
                                                 <label for="student_bday">Birthday<span class="text-danger">*</span></label>
                                                 <input type="date" class="form-control" id="student_bday" name="student_bday" placeholder="" value="" required="">
                                             </div>
-                                            <div class="form-group col-md-4">
+                                            <div class="form-group col-md-6">
                                                 <label for="student_sex">Sex<span class="text-danger">*</span></label>
                                                 <select class="form-control" id="student_sex" name="student_sex" required="">
+                                                    <option value="Male">Male</option>
+                                                    <option value="Female">Female</option>
+                                                    <option value="Orther">Other</option>
                                                     <?php
-                                                    $auth_user->user_sex_option();
+                                                    // $auth_user->user_sex_option();
                                                     ?>
                                                 </select>
                                             </div>
-                                            <div class="form-group col-md-4">
+                                            <!-- <div class="form-group col-md-4">
                                                 <label for="student_marital">Marital<span class="text-danger">*</span></label>
                                                 <select class="form-control" id="student_marital" name="student_marital" required="">
                                                     <?php
-                                                    $auth_user->user_marital_option();
+                                                    // $auth_user->user_marital_option();
                                                     ?>
                                                 </select>
-                                            </div>
+                                            </div> -->
                                             <div class="form-group col-md-12">
                                                 <label for="student_email">Email<span class="text-danger">*</span></label>
                                                 <input type="email" class="form-control" id="student_email" name="student_email" placeholder="" value="" required="">
@@ -203,11 +205,11 @@ $pageTitle = "Manage Student";
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <input type="hidden" name="student_ID" id="student_ID" />
+                                        <input type="hidden" name="student_id" id="student_id" />
                                         <input type="hidden" name="operation" id="operation" />
-                                        <div class="btn-group" id='sbtng'>
-                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                            <button type="submit" class="btn btn-primary submit" id="submit_input" value="submit_student">Submit</button>
+                                        <div class="" id='sbtng'>
+                                            <button type="button" class="btn btn-secondary rounded mr-1" data-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-primary rounded submit" id="submit_input" value="submit_student">Submit</button>
                                         </div>
                                     </div>
                                 </form>
@@ -318,13 +320,12 @@ $pageTitle = "Manage Student";
                 $("#student_fname").prop("disabled", false);
                 $("#student_mname").prop("disabled", false);
                 $("#student_lname").prop("disabled", false);
-                $("#student_suffix").prop("disabled", false);
+                // $("#student_suffix").prop("disabled", false);
                 $("#student_bday").prop("disabled", false);
                 $("#student_sex").prop("disabled", false);
-                $("#student_marital").prop("disabled", false);
+                // $("#student_marital").prop("disabled", false);
                 $("#student_email").prop("disabled", false);
                 $("#student_address").prop("disabled", false);
-
 
                 $("#student_img").show();
                 $('#submit_input').show();
@@ -335,16 +336,14 @@ $pageTitle = "Manage Student";
             });
 
             $(document).on('click', '.view', function() {
-                var student_ID = $(this).attr("id");
-                $('#student_modal_title').text('View Student');
+                var student_id = $(this).attr("id");
+                $('#student_modal_title').text('View Student Infomation');
                 $('#student_modal').modal('show');
-
 
                 $('#submit_input').hide();
                 var btng = document.getElementById("sbtng");
                 btng.className = btng.className.replace(/\bbtn-group\b/g, "");
                 btng.classList.add("btng_null");
-
 
                 $("#student_img").hide();
 
@@ -353,7 +352,7 @@ $pageTitle = "Manage Student";
                     method: 'POST',
                     data: {
                         action: "student_view",
-                        student_ID: student_ID
+                        student_id: student_id
                     },
                     dataType: 'json',
                     success: function(data) {
@@ -361,10 +360,10 @@ $pageTitle = "Manage Student";
                         $("#student_fname").prop("disabled", true);
                         $("#student_mname").prop("disabled", true);
                         $("#student_lname").prop("disabled", true);
-                        $("#student_suffix").prop("disabled", true);
+                        // $("#student_suffix").prop("disabled", true);
                         $("#student_bday").prop("disabled", true);
                         $("#student_sex").prop("disabled", true);
-                        $("#student_marital").prop("disabled", true);
+                        // $("#student_marital").prop("disabled", true);
                         $("#student_email").prop("disabled", true);
                         $("#student_address").prop("disabled", true);
 
@@ -374,15 +373,15 @@ $pageTitle = "Manage Student";
                         $('#student_fname').val(data.student_fname);
                         $('#student_mname').val(data.student_mname);
                         $('#student_lname').val(data.student_lname);
-                        $('#student_suffix').val(data.student_suffix).change();
+                        // $('#student_suffix').val(data.student_suffix).change();
                         $('#student_bday').val(data.student_bday);
                         $('#student_sex').val(data.student_sex).change();
-                        $('#student_marital').val(data.student_marital).change();
+                        // $('#student_marital').val(data.student_marital).change();
                         $('#student_email').val(data.student_email);
                         $('#student_address').val(data.student_address);
 
                         $('#submit_input').hide();
-                        $('#student_ID').val(student_ID);
+                        $('#student_id').val(student_id);
                         $('#submit_input').text('Update');
                         $('#submit_input').val('student_view');
                         $('#operation').val("student_view");
@@ -392,15 +391,13 @@ $pageTitle = "Manage Student";
 
 
             $(document).on('click', '.edit', function() {
-                var student_ID = $(this).attr("id");
-                $('#student_modal_title').text('View Student');
+                var student_id = $(this).attr("id");
+                $('#student_modal_title').text('Update Student Infomation');
                 $('#student_modal').modal('show');
-
 
                 var btng = document.getElementById("sbtng");
                 btng.className = btng.className.replace(/\btng_null\b/g, "");
                 btng.classList.add("btn-group");
-
 
                 $("#student_img").show();
 
@@ -409,7 +406,7 @@ $pageTitle = "Manage Student";
                     method: 'POST',
                     data: {
                         action: "student_update",
-                        student_ID: student_ID
+                        student_id: student_id
                     },
                     dataType: 'json',
                     success: function(data) {
@@ -438,7 +435,7 @@ $pageTitle = "Manage Student";
                         $('#student_address').val(data.student_address);
 
                         $('#submit_input').show();
-                        $('#student_ID').val(student_ID);
+                        $('#student_id').val(student_id);
                         $('#submit_input').text('Update');
                         $('#submit_input').val('student_update');
                         $('#operation').val("student_update");
@@ -450,7 +447,7 @@ $pageTitle = "Manage Student";
             });
 
             $(document).on('click', '.delete', function() {
-                var student_ID = $(this).attr("id");
+                var student_id = $(this).attr("id");
                 alertify.confirm('Are you sure you want to delete this student?',
                     function() {
                         $.ajax({
@@ -458,7 +455,7 @@ $pageTitle = "Manage Student";
                             url: "datatable/student/insert.php",
                             data: {
                                 operation: "delete_student",
-                                student_ID: student_ID
+                                student_id: student_id
                             },
                             dataType: 'json',
                             complete: function(data) {
@@ -475,21 +472,21 @@ $pageTitle = "Manage Student";
             });
 
             // $(document).on('click', '.delete', function() {
-            //     var student_ID = $(this).attr("id");
+            //     var student_id = $(this).attr("id");
             //     $('#delstudent_modal').modal('show');
             //     // $('.submit').hide();
 
-            //     $('#student_ID').val(student_ID);
+            //     $('#student_id').val(student_id);
             // });
 
             // $(document).on('click', '#student_delform', function(event) {
-            //     var student_ID = $('#student_ID').val();
+            //     var student_id = $('#student_id').val();
             //     $.ajax({
             //         type: 'POST',
             //         url: "datatable/student/insert.php",
             //         data: {
             //             operation: "delete_student",
-            //             student_ID: student_ID
+            //             student_id: student_id
             //         },
             //         dataType: 'json',
             //         complete: function(data) {
@@ -501,7 +498,7 @@ $pageTitle = "Manage Student";
             // });
 
             $(document).on('click', '.gen_account', function(event) {
-                var student_ID = $(this).attr("id");
+                var student_id = $(this).attr("id");
                 alertify.confirm('Are you sure you want to create this person account?',
                     function() {
                         $.ajax({
@@ -509,7 +506,7 @@ $pageTitle = "Manage Student";
                             url: "datatable/student/insert.php",
                             data: {
                                 operation: "gen_account",
-                                student_ID: student_ID
+                                student_id: student_id
                             },
                             dataType: 'json',
                             complete: function(data) {
