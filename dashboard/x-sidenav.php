@@ -75,7 +75,8 @@ function navlist($pagefile_name, $name, $link, $icon)
                 navlist($pagefile_name, "Admin Management", "admin", "book");
                 navlist($pagefile_name, "Student Management", "student", "book");
                 navlist($pagefile_name, "Teacher Management", "teacher", "book");
-                navlist($pagefile_name, "Classroom Management", "room", "monitor");
+                navlist($pagefile_name, "Classroom Management", "subject", "monitor");
+                // navlist($pagefile_name, "Classroom Management", "room", "monitor");
                 navlist($pagefile_name, "School Year", "acadamicyear", "book");
             }
             ?>

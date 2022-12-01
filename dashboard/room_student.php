@@ -122,9 +122,11 @@ if (isset($_REQUEST["room_ID"])) {
                         <thead>
                             <tr>
                                 <th>#</th>
+                                <th></th>
                                 <th>Student ID</th>
                                 <th>Name</th>
-                                <th>Sex</th>
+                                <th>Gender</th>
+                                <th>Email</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -253,8 +255,9 @@ if (isset($_REQUEST["room_ID"])) {
                     "targets": [0],
                     "orderable": false,
                 }, ],
-
             });
+            dataTable.columns([1]).visible(false);
+
             var stud_dataTable = $('#all_student_data').DataTable({
                 "processing": true,
                 "serverSide": true,
@@ -271,7 +274,7 @@ if (isset($_REQUEST["room_ID"])) {
 
             });
             <?php if ($auth_user->student_level()) { ?>
-                dataTable.columns([4]).visible(false);
+                dataTable.columns([6]).visible(false);
             <?php } ?>
             stud_dataTable.columns([1]).visible(false);
 
@@ -342,6 +345,7 @@ if (isset($_REQUEST["room_ID"])) {
 
             $(document).on('click', '.delete', function() {
                 var student_ID = $(this).attr("id");
+                var room_ID = $('#room_ID').val();
                 alertify.confirm('Are you sure you want to delete this student?',
                     function() {
                         $.ajax({
@@ -349,7 +353,8 @@ if (isset($_REQUEST["room_ID"])) {
                             url: "datatable/room/insert.php",
                             data: {
                                 operation: "delete_student",
-                                student_ID: student_ID
+                                student_ID: student_ID,
+                                room_ID: room_ID
                             },
                             dataType: 'json',
                             complete: function(data) {

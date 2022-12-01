@@ -113,22 +113,26 @@ $pageTitle = "Manage Room";
                         <thead>
                             <tr>
                                 <?php
-                                if ($auth_user->student_level()) {
+                                // if ($auth_user->student_level()) {
                                 ?>
                                     <th>#</th>
-                                    <th>Section</th>
+                                    <th></th>
+                                    <th>Classroom</th>
+                                    <th>Teacher</th>
+                                    <th>Semester</th>
+                                    <th>Status</th>
                                     <th></th>
                                 <?php
-                                } else {
+                                // } else {
                                 ?>
-                                    <th>#</th>
+                                    <!-- <th>#</th>
                                     <th>Teacher</th>
                                     <th>Section</th>
                                     <th>School Year</th>
                                     <th>Status</th>
-                                    <th></th>
+                                    <th></th> -->
                                 <?php
-                                }
+                                // }
                                 ?>
                             </tr>
                         </thead>
@@ -165,7 +169,7 @@ $pageTitle = "Manage Room";
                                                 <label for="teacher_section">Section<span class="text-danger">*</span></label>
                                                 <select class="form-control" id="teacher_section" name="teacher_section">
                                                     <?php
-                                                    $auth_user->ref_section();
+                                                    // $auth_user->ref_section();
                                                     ?>
                                                 </select>
                                             </div>
@@ -286,6 +290,7 @@ $pageTitle = "Manage Room";
             var dataTable = $('#classroom_data').DataTable({
                 "processing": true,
                 "serverSide": true,
+                "ordering":false,
                 "order": [],
                 "ajax": 
                     <?php
@@ -304,11 +309,13 @@ $pageTitle = "Manage Room";
                     "orderable": false,
                 }, ],
             });
+            dataTable.columns([1]).visible(false);
 
             // get datatable for browse teacher
             var teacher_dataTable = $('#teacher_data').DataTable({
                 "processing": true,
                 "serverSide": true,
+                "ordering":false,
                 "order": [],
                 "bAutoWidth": false,
                 "ajax": {

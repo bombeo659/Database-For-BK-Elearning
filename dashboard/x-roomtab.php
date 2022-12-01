@@ -24,7 +24,7 @@ $rad = $auth_user->room_adviser($room_ID);
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb bcrum bg-dark">
         <li class="breadcrumb-item "><a href="index" class="bcrum_i_a">Dashboard</a></li>
-        <li class="breadcrumb-item "><a href="room" class="bcrum_i_a">Room</a></li>
+        <li class="breadcrumb-item "><a href="subject" class="bcrum_i_a"><?php echo $rad["subject_name"] . ' - ' . $rad["class_name"] ?></a></li>
         <li class="breadcrumb-item active bcrum_i_ac" aria-current="page"><?php echo $rtab_c ?></li>
     </ol>
 </nav>
@@ -32,7 +32,7 @@ $rad = $auth_user->room_adviser($room_ID);
     <table class="table table-bordered table-sm">
         <tbody>
             <tr>
-                <td colspan="2" class="text-center"><?php echo $rad["sectionname"] ?></td>
+                <td colspan="2" class="text-center"><?php echo $rad["class_name"] . ' - ' . $rad["subject_name"] ?></td>
             </tr>
             <tr>
                 <td width="10%">Teacher:</td>

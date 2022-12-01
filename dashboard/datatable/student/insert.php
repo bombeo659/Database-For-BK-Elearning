@@ -30,7 +30,7 @@ if (isset($_POST["operation"])) {
         $stmt1->execute();
         $rs = $stmt1->fetchAll();
         if ($stmt1->rowCount() > 0) {
-            echo "LRN Already Used";
+            echo "Student ID Already Used";
         } else {
             try {
                 $stmt = $student->runQuery("INSERT INTO `student_details` 
@@ -60,12 +60,14 @@ if (isset($_POST["operation"])) {
         $student_email = addslashes($_POST["student_email"]);
         $student_address = addslashes($_POST["student_address"]);
 
-        if (isset($_FILES['student_img']['tmp_name'])) {
+        if (isset($_FILES['student_img']['tmp_name']) && $_FILES['student_img']['tmp_name'] != "") {
             $new_img = addslashes(file_get_contents($_FILES['student_img']['tmp_name']));
             $set_img = " `sd_img` = '$new_img' , ";
+            $set_uimg = "`user_img` = '$new_img' ,";
         } else {
             $new_img = '';
             $set_img = '';
+            $set_uimg = '';
         }
 
         try {
@@ -92,7 +94,7 @@ if (isset($_POST["operation"])) {
             if ($stmt->rowCount() == 1) {
                 $userRow = $stmt->fetch(PDO::FETCH_ASSOC);
                 $stmt = $student->runQuery(
-                "UPDATE `user_account` SET `user_img` = '$new_img' WHERE `user_id` = " . $userRow['user_id'] . ";");
+                "UPDATE `user_account` SET " . $set_uimg. " `user_name` = '$student_lrn' WHERE `user_id` = " . $userRow['user_id'] . ";");
                 $result2 = $stmt->execute();
             }
 

@@ -274,6 +274,7 @@ $pageTitle = "Manage Student";
             var student_dataTable = $('#student_data').DataTable({
                 "processing": true,
                 "serverSide": true,
+                "ordering": false,
                 "order": [],
                 "ajax": {
                     url: "datatable/student/fetch.php",
@@ -392,6 +393,7 @@ $pageTitle = "Manage Student";
 
             $(document).on('click', '.edit', function() {
                 var student_id = $(this).attr("id");
+                var acreg = $(this).attr("acreg");
                 $('#student_modal_title').text('Update Student Infomation');
                 $('#student_modal').modal('show');
 
@@ -410,6 +412,12 @@ $pageTitle = "Manage Student";
                     },
                     dataType: 'json',
                     success: function(data) {
+                        // if (acreg == "UN") {
+                        //     $("#student_lrn").prop("disabled", false);
+                        // } else {
+                        //     $("#student_lrn").prop("disabled", true);
+                        // }
+
                         $("#student_lrn").prop("disabled", false);
                         $("#student_fname").prop("disabled", false);
                         $("#student_mname").prop("disabled", false);
@@ -512,19 +520,15 @@ $pageTitle = "Manage Student";
                             complete: function(data) {
                                 alertify.alert(data.responseText).setHeader('Generated Account');
                                 student_dataTable.ajax.reload();
-
                             }
                         })
-
                         student_dataTable.ajax.reload();
-                        alertify.success('Ok')
                     },
                     function() {
                         alertify.error('Cancel')
-                    }).setHeader('Generate Account');
-
+                    }
+                ).setHeader('Generate Account');
             });
-
         });
     </script>
 </body>

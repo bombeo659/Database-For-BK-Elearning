@@ -17,17 +17,17 @@ class ACFunction
         return $stmt;
     }
 
-    public function getUserPic($user_ID)
+    public function getUserPic($user_id)
     {
-        $query = "SELECT user_Img FROM `user_account` WHERE user_ID = $user_ID LIMIT 1";
+        $query = "SELECT user_img FROM `user_account` WHERE user_id = $user_id LIMIT 1";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         $result = $stmt->fetchAll();
         foreach ($result as $row) {
-            if (!empty($row['user_Img'])) {
-                $_SESSION['user_Img']  = 'data:image/jpeg;base64,' . base64_encode($row['user_Img']);
+            if (!empty($row['user_img'])) {
+                $_SESSION['user_img']  = 'data:image/jpeg;base64,' . base64_encode($row['user_img']);
             } else {
-                $_SESSION['user_Img']  = "../assets/img/users/default.jpg";
+                $_SESSION['user_img']  = "../assets/img/users/default.jpg";
             }
         }
     }

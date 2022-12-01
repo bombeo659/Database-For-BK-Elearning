@@ -14,6 +14,7 @@ create table user_account(
     user_img longblob,
     user_name varchar(85),
     user_pass varchar(255),
+    user_registered timestamp default CURRENT_TIMESTAMP,
     constraint ua_pk primary key (user_id),
     constraint ua_fk foreign key (lvl_id) references user_level(lvl_id) 
 );
@@ -69,7 +70,7 @@ create table admin_details(
     ad_fname varchar(85),
     ad_mname varchar(85),
     ad_lname varchar(85),
-    ad_gender varchar(25) default ('Male' or 'Female'),
+    ad_gender varchar(25) default ('Male' or 'Female' or 'Other'),
     ad_email varchar(100),
     ad_bday date,
     ad_address varchar(255),
@@ -93,10 +94,10 @@ create table faculty(
 create table subject( 
 	subject_id integer not null auto_increment, 
     subject_name varchar(85),
-    ind_id integer not null,
+    -- ind_id integer not null,
     faculty_id integer not null,
     constraint s_pk primary key (subject_id),
-    constraint s_fk1 foreign key (ind_id) references instructor_details(ind_id),
+    -- constraint s_fk1 foreign key (ind_id) references instructor_details(ind_id),
     constraint s_fk2 foreign key (faculty_id) references faculty(faculty_id)
 );
 
@@ -119,11 +120,11 @@ create table class(
 	class_id integer not null auto_increment,
     subject_id integer not null,
     status_id integer not null,
-    sem_id integer not null,
+    -- sem_id integer not null,
 	constraint c_pk primary key (class_id),
     constraint c_fk1 foreign key (status_id) references status(status_id),
-    constraint c_fk2 foreign key (subject_id) references subject(subject_id),
-    constraint c_fk3 foreign key (sem_id) references semester(sem_id)
+    constraint c_fk2 foreign key (subject_id) references subject(subject_id)
+    -- constraint c_fk3 foreign key (sem_id) references semester(sem_id)
 );
 
 create table class_student( 
@@ -253,6 +254,46 @@ create table test_score(
 );
 
 
-INSERT INTO `bk_elearning`.`user_level` (`lvl_id`, `lvl_name`) VALUES ('1', 'student');
-INSERT INTO `bk_elearning`.`user_level` (`lvl_id`, `lvl_name`) VALUES ('2', 'instructor');
-INSERT INTO `bk_elearning`.`user_level` (`lvl_id`, `lvl_name`) VALUES ('3', 'admin');
+INSERT INTO `bk_elearning`.`user_level` (`lvl_id`, `lvl_name`) VALUES ('1', 'Student');
+INSERT INTO `bk_elearning`.`user_level` (`lvl_id`, `lvl_name`) VALUES ('2', 'Instructor');
+INSERT INTO `bk_elearning`.`user_level` (`lvl_id`, `lvl_name`) VALUES ('3', 'Admin');
+
+INSERT INTO `bk_elearning`.`student_details` (`sd_id`, `sd_studnum`, `sd_fname`, `sd_lname`, `sd_gender`) VALUES ('1', '1915676', 'Trong', 'Nguyen', 'Male');
+
+INSERT INTO `bk_elearning`.`instructor_details` (`ind_id`, `ind_empid`, `ind_fname`, `ind_lname`, `ind_gender`) VALUES ('1', '1234500', 'Anh', 'Pham', 'Male');
+
+INSERT INTO `bk_elearning`.`user_account` (`user_id`, `lvl_id`, `user_name`, `user_pass`) VALUES ('2', '1', '1915676', '$2y$10$qBZV0Aqz6aqn1akRuA02e.acXxhtxqOdWW/eQZsRln4j1YCCRqyp2');
+INSERT INTO `bk_elearning`.`user_account` (`user_id`, `lvl_id`, `user_name`, `user_pass`) VALUES ('3', '2', '1234500', '$2y$10$qBZV0Aqz6aqn1akRuA02e.acXxhtxqOdWW/eQZsRln4j1YCCRqyp2');
+
+INSERT INTO `bk_elearning`.`faculty` (`faculty_id`, `faculty_name`) VALUES ('1', 'Computer Science and Engineering');
+INSERT INTO `bk_elearning`.`faculty` (`faculty_id`, `faculty_name`) VALUES ('2', 'Electrical and Electronics Engineering');
+INSERT INTO `bk_elearning`.`faculty` (`faculty_id`, `faculty_name`) VALUES ('3', 'Mechanical Engineering');
+INSERT INTO `bk_elearning`.`faculty` (`faculty_id`, `faculty_name`) VALUES ('4', 'Civil Engineering');
+INSERT INTO `bk_elearning`.`faculty` (`faculty_id`, `faculty_name`) VALUES ('5', 'Chemical Engineering');
+INSERT INTO `bk_elearning`.`faculty` (`faculty_id`, `faculty_name`) VALUES ('6', 'Applied Science');
+INSERT INTO `bk_elearning`.`faculty` (`faculty_id`, `faculty_name`) VALUES ('7', 'Industrial Management');
+INSERT INTO `bk_elearning`.`faculty` (`faculty_id`, `faculty_name`) VALUES ('8', 'Transportation Engineering');
+
+
+INSERT INTO `bk_elearning`.`subject` (`subject_id`, `subject_name`, `ind_id`, `faculty_id`) VALUES ('1', 'Database Systems', '1', '1');
+INSERT INTO `bk_elearning`.`subject` (`subject_id`, `subject_name`, `ind_id`, `faculty_id`) VALUES ('2', 'Embedded System', '1', '1');
+
+
+ALTER TABLE subject DROP FOREIGN KEY s_fk1;
+ALTER TABLE subject DROP COLUMN ind_id;
+
+ALTER TABLE class ADD ind_id integer not null;
+ALTER TABLE class ADD constraint c_fk4 FOREIGN KEY (ind_id) references instructor_details(ind_id);
+
+
+INSERT INTO `bk_elearning`.`status` (`status_id`, `status`) VALUES ('1', 'Enable');
+INSERT INTO `bk_elearning`.`status` (`status_id`, `status`) VALUES ('2', 'Disable');
+
+INSERT INTO `bk_elearning`.`semester` (`sem_id`, `sem_start`, `sem_end`, `status_id`) VALUES ('1', '2021-09-01', '2022-05-01', '2');
+INSERT INTO `bk_elearning`.`semester` (`sem_id`, `sem_start`, `sem_end`, `status_id`) VALUES ('2', '2022-09-01', '2023-05-01', '1');
+
+INSERT INTO `bk_elearning`.`class` (`class_id`, `subject_id`, `status_id`, `sem_id`, `ind_id`) VALUES ('1', '1', '1', '2', '1');
+
+alter table class add column class_name varchar(30);
+
+-- sem_id from class -> subject

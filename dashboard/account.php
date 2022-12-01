@@ -145,8 +145,8 @@ $pageTitle = "Manage Account";
                                     <input type="hidden" id="account_ID" name="account_ID" value="">
                                     <input type="hidden" name="operation" value="change_password">
                                     <div class="">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                        <input type="submit" class="btn btn-primary" id="btn_change_password" value="Save changes">
+                                        <button type="button" class="btn rounded mr-1 btn-secondary" data-dismiss="modal">Close</button>
+                                        <input type="submit" class="btn btn-primary rounded" id="btn_change_password" value="Save changes">
                                     </div>
                                 </div>
                                     </form>
@@ -168,6 +168,7 @@ $pageTitle = "Manage Account";
             var admin_dataTable = $('#admin_data').DataTable({
                 "processing": true,
                 "serverSide": true,
+                "ordering": false,
                 "order": [],
                 "ajax": {
                     url: "datatable/account/fetch.php",
@@ -213,7 +214,7 @@ $pageTitle = "Manage Account";
                             type: 'POST',
                             url: "datatable/account/insert.php",
                             data: {
-                                m_operation: "user_delete",
+                                operation: "user_delete",
                                 user_ID: user_ID
                             },
                             dataType: 'json',
@@ -222,7 +223,6 @@ $pageTitle = "Manage Account";
                                 admin_dataTable.ajax.reload();
                             }
                         })
-                        alertify.success('Ok')
                     },
                     function() {
                         alertify.error('Cancel')

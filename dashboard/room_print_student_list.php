@@ -5,23 +5,30 @@ $page_level = 2;
 $auth_user->check_accesslevel($page_level);
 $query = '';
 $query .= "SELECT 
-rsd.rsd_StudNum,
-rsd.rsd_FName,
-rsd.rsd_MName,
-rsd.rsd_LName,
-rsd.rsd_Email,
-sx.sex_Name
+`sd`.`sd_id`,
+`sd`.`sd_img`,
+`sd`.`sd_studnum`,
+`sd`.`sd_fname`,
+`sd`.`sd_mname`,
+`sd`.`sd_lname`,
+`sd`.`sd_gender`,
+`sd`.`sd_email`,
+`cs`.`class_id`,
+`cla`.`class_name`,
+`sub`.`subject_name`
 ";
-$query .= " FROM `room_student` `rs`
-LEFT JOIN `record_student_details` `rsd` ON `rsd`.`rsd_ID` = `rs`.`rsd_ID`
-LEFT JOIN `ref_suffixname` `sn` ON `sn`.`suffix_ID`  = `rsd`.`suffix_ID`
-LEFT JOIN `ref_sex` `sx` ON `sx`.`sex_ID` = `rsd`.`sex_ID`";
+$query .= " FROM `class_student` `cs`
+LEFT JOIN `student_details` `sd` ON `cs`.`sd_id` = `sd`.`sd_id`
+Left join `class` `cla` on `cla`.`class_id` = `cs`.`class_id`
+left join `subject` `sub` on `cla`.`subject_id` = `sub`.`subject_id`
+";
 
 if (isset($_REQUEST['room_ID'])) {
     $room_ID = $_REQUEST['room_ID'];
-    $query .= '  WHERE `rs`.`room_ID` = ' . $room_ID . ' ';
+    $query .= '  WHERE `cs`.`class_id` = ' . $room_ID . ' ';
 }
-$query .= ' ORDER BY rsd.rsd_FName ASC ';
+
+$query .= ' ORDER BY `sd`.`sd_fname` ASC ';
 
 $statement = $auth_user->runQuery($query);
 $statement->execute();
@@ -30,7 +37,7 @@ $filtered_rows = $statement->rowCount();
 
 if ($filtered_rows > 0) {
     $delimiter = ",";
-    $filename = "members-data_" . date('Y-m-d') . ".csv";
+    
 
     // Create a file pointer 
     $f = fopen('php://memory', 'w');
@@ -41,9 +48,9 @@ if ($filtered_rows > 0) {
 
     // Output each row of the data, format line as csv and write to file pointer 
     foreach ($result as $row) {
-        
-        $lineData = array($row['rsd_StudNum'], $row['rsd_FName'], $row['rsd_MName'], $row['rsd_LName'], 
-        $row['rsd_Email'], $row['sex_Name']);
+        $filename = "Members-of-" . $row["class_name"] . '-' . $row["subject_name"] . ".csv";
+        $lineData = array($row['sd_studnum'], $row['sd_fname'], $row['sd_mname'], $row['sd_lname'], 
+        $row['sd_email'], $row['sd_gender']);
         fputcsv($f, $lineData, $delimiter);
     }
 

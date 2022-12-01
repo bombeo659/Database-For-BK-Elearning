@@ -1,40 +1,39 @@
 <?php
 require_once('../class-function.php');
-$room = new DTFunction();
+$class = new DTFunction();
 
 if (isset($_POST["operation"])) {
     if ($_POST["operation"] == "add_classroom") {
         try {
+            $class_name = $_POST["class_name"];
             $teacher_ID = $_POST["rid_ID"];
-            $section_ID = $_POST["teacher_section"];
-            $semester_ID = $_POST["teacher_semester"];
-            $stmt1 = $room->runQuery("SELECT * FROM `room` WHERE 
-			rid_ID = '$teacher_ID' AND section_ID = '$section_ID' AND sem_ID = '$semester_ID' LIMIT 1");
+            $subject_ID = $_POST["subject_ID"];
+            $stmt1 = $class->runQuery("SELECT * FROM `class` WHERE `subject_id` = " .$subject_ID ." and `class_name` = '" .$class_name . "' LIMIT 1");
             $stmt1->execute();
             $rs = $stmt1->fetchAll();
             if ($stmt1->rowCount() > 0) {
-                echo "You cannot add same teacher in same Semester & Section";
+                echo "You cannot add same Class name in same Subject";
             } else {
-                $q = "SELECT * FROM `ref_semester` WHERE sem_ID = " . $semester_ID . ";";
-                $s1 = $room->runQuery($q);
+                $q = "SELECT * FROM `semester` WHERE sem_id IN (select sem_id from `subject` where subject_id = " . $subject_ID . ")";
+                $s1 = $class->runQuery($q);
                 $s1->execute();
                 $r1 = $s1->fetchAll();
                 foreach ($r1 as $rz) {
-                    if ($rz["stat_ID"] == 0) {
+                    if ($rz["status_id"] == 2) {
                         $status_ID = 2;
                     } else {
                         $status_ID = 1;
                     }
                 }
 
-                $sql = "INSERT INTO `room` (`room_ID`, `rid_ID`, `section_ID`, `sem_ID`, `status_ID`) 
-				    VALUES ( NULL, :teacher_ID, :section_ID, :semester_ID, :status_ID);";
-                $statement = $room->runQuery($sql);
+                $sql = "INSERT INTO `class` (`class_id`, `class_name`, `subject_id`, `status_id`, `ind_id`) 
+				    VALUES ( NULL, :class_name, :subject_id, :status_id, :ind_id);";
+                $statement = $class->runQuery($sql);
                 $result = $statement->execute(array(
-                    ':teacher_ID'      =>    $teacher_ID,
-                    ':section_ID'      =>    $section_ID,
-                    ':semester_ID'     =>    $semester_ID,
-                    ':status_ID'       =>    $status_ID)
+                    ':class_name'      =>    $class_name,
+                    ':subject_id'      =>    $subject_ID,
+                    ':status_id'     =>    $status_ID,
+                    ':ind_id'       =>    $teacher_ID)
                 );
                 if (!empty($result)) {
                     echo 'Successfully Added';
@@ -49,33 +48,33 @@ if (isset($_POST["operation"])) {
 
     if ($_POST["operation"] == "update_classroom") {
         try {
-            $room_ID = $_POST["room_ID"];
+            $class_ID = $_POST["room_ID"];
             $teacher_ID = $_POST["rid_ID"];
-            $section_ID = $_POST["teacher_section"];
-            $semester_ID = $_POST["teacher_semester"];
-            $stmt1 = $room->runQuery("SELECT * FROM `room` WHERE 
-			rid_ID = '$teacher_ID' AND section_ID = '$section_ID' AND sem_ID = '$semester_ID' LIMIT 1");
+            $class_name = $_POST["class_name"];
+            $subject_ID = $_POST["subject_ID"];
+
+            $stmt1 = $class->runQuery("SELECT * FROM `class` WHERE `subject_id` = " .$subject_ID ." and `class_name` = '" .$class_name . "' LIMIT 1");
             $stmt1->execute();
             $rs = $stmt1->fetchAll();
             if ($stmt1->rowCount() > 0) {
-                echo "You cannot add same teacher in same Semester & Section";
+                echo "You cannot add same Class name in same Subject";
             } else {
-                $q = "SELECT * FROM `ref_semester` WHERE sem_ID = " . $semester_ID . ";";
-                $s1 = $room->runQuery($q);
+                $q = "SELECT * FROM `semester` WHERE sem_id IN (select sem_id from `subject` where subject_id = " . $subject_ID . ")";
+                $s1 = $class->runQuery($q);
                 $s1->execute();
                 $r1 = $s1->fetchAll();
                 foreach ($r1 as $rz) {
-                    if ($rz["stat_ID"] == 0) {
+                    if ($rz["status_id"] == 2) {
                         $status_ID = 2;
                     } else {
                         $status_ID = 1;
                     }
                 }
 
-                $sql = "UPDATE `room` SET
-                `rid_ID` = '$teacher_ID', `section_ID` = '$section_ID', `sem_ID` = '$semester_ID', `status_ID` = '$status_ID'
-                WHERE `room`.`room_ID` = $room_ID";
-                $statement = $room->runQuery($sql);
+                $sql = "UPDATE `class` SET
+                `ind_id` = '$teacher_ID', `class_name` = '$class_name', `subject_id` = '$subject_ID', `status_id` = '$status_ID'
+                WHERE `class`.`class_id` = $class_ID";
+                $statement = $class->runQuery($sql);
                 $result = $statement->execute();
                 if (!empty($result)) {
                     echo 'Successfully Updated';
@@ -90,7 +89,7 @@ if (isset($_POST["operation"])) {
 
     if ($_POST["operation"] == "delete_classroom") {
         try {
-            $statement = $room->runQuery("DELETE FROM `room` WHERE `room_ID` = :room_ID");
+            $statement = $class->runQuery("DELETE FROM `class` WHERE `class_id` = :room_ID");
             $result = $statement->execute(array(':room_ID' => $_POST["room_ID"]));
 
             if (!empty($result)) {
@@ -104,25 +103,25 @@ if (isset($_POST["operation"])) {
     //ROOM LIST OF STUDENT
     if ($_POST["operation"] == "submit_student") {
         try {
-            $vstmt = $room->runQuery(
-                "SELECT * FROM `room_student` WHERE rsd_ID = :rsd_ID AND room_ID = :room_ID"
+            $vstmt = $class->runQuery(
+                "SELECT * FROM `class_student` WHERE sd_id = :rsd_ID AND class_id = :class_ID"
             );
             $vstmt->execute(
                 array(
                     ':rsd_ID'    =>    $_POST["rsd_ID"],
-                    ':room_ID'    =>    $_POST["room_ID"]
+                    ':class_ID'    =>    $_POST["room_ID"]
                 )
             );
             if ($vstmt->rowCount() > 0) {
-                echo 'You cannot add same student in this room.';
+                echo 'You cannot add same student in this class.';
             } else {
-                $statement = $room->runQuery(
-                    "INSERT INTO `room_student` (`res_ID`, `rsd_ID`, `room_ID`) VALUES (NULL, :rsd_ID, :room_ID);"
+                $statement = $class->runQuery(
+                    "INSERT INTO `class_student` (`class_id`, `sd_id`) VALUES (:class_ID, :rsd_ID);"
                 );
                 $result = $statement->execute(
                     array(
                         ':rsd_ID'    =>    $_POST["rsd_ID"],
-                        ':room_ID'    =>    $_POST["room_ID"]
+                        ':class_ID'    =>    $_POST["room_ID"]
                     )
                 );
                 if (!empty($result)) {
@@ -136,10 +135,11 @@ if (isset($_POST["operation"])) {
 
     if ($_POST["operation"] == "delete_student") {
         try {
-            $statement = $room->runQuery("DELETE FROM `room_student` WHERE `res_ID` = :res_ID");
+            $statement = $class->runQuery("DELETE FROM `class_student` WHERE `sd_id` = :sd_id and `class_id` = :class_id");
             $result = $statement->execute(
                 array(
-                    ':res_ID'    =>    $_POST["student_ID"]
+                    ':sd_id'    =>    $_POST["student_ID"],
+                    ':class_id'    =>    $_POST["room_ID"]
                 )
             );
 

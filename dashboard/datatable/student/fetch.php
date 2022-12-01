@@ -22,11 +22,11 @@ $query .= ' WHERE ';
 
 if (isset($_POST["search"]["value"])) {
     // $query .= ' sd_id LIKE "%' . $_POST["search"]["value"] . '%" ';
-    $query .= ' sd_studnum LIKE "%' . $_POST["search"]["value"] . '%" ';
+    $query .= '( sd_studnum LIKE "%' . $_POST["search"]["value"] . '%" ';
     $query .= ' OR sd_fname LIKE "%' . $_POST["search"]["value"] . '%" ';
     $query .= ' OR sd_mname LIKE "%' . $_POST["search"]["value"] . '%" ';
     $query .= ' OR sd_lname LIKE "%' . $_POST["search"]["value"] . '%" ';
-    $query .= ' OR sd_gender LIKE "%' . $_POST["search"]["value"] . '%" ';
+    $query .= ' OR sd_gender LIKE "%' . $_POST["search"]["value"] . '%" )';
 }
 
 if (isset($_POST["order"])) {

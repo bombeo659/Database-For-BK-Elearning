@@ -102,7 +102,7 @@ if (isset($_POST["operation"])) {
                     ':admin_ID'    =>    $_POST["admin_ID"]
                 )
             );
-    
+
             if (!empty($result)) {
                 echo 'Successfully Deleted';
             }
@@ -123,7 +123,7 @@ if (isset($_POST["operation"])) {
         if ($update_password_new === $update_password_newconfirm) {
             $new_password = password_hash($update_password_newconfirm, PASSWORD_DEFAULT);
             try {
-                $stmt = $admin->runQuery("UPDATE `user_account` SET `user_Pass` = :user_Pass WHERE `user_account`.`user_ID` = :user_ID");
+                $stmt = $admin->runQuery("UPDATE `user_account` SET `user_pass` = :user_Pass WHERE `user_account`.`user_id` = :user_ID");
                 $stmt->bindparam(":user_ID", $account_ID);
                 $stmt->bindparam(":user_Pass", $new_password);
                 $stmt->execute();
@@ -138,12 +138,29 @@ if (isset($_POST["operation"])) {
 
     if ($_POST["operation"] == "user_delete") {
         try {
-            $statement = $admin->runQuery("DELETE FROM `user_account` WHERE `user_ID` = :user_ID");
-            $result = $statement->execute(
-                array(
-                    ':user_ID'    =>    $_POST["user_ID"]
-                )
-            );
+            $user_id = $_POST["user_ID"];
+
+            $query = "SELECT lvl_id FROM `user_account` WHERE `user_id` = '$user_id'";
+            $stmt = $admin->runQuery($query);
+            $stmt->execute();
+            if ($stmt->rowCount() == 1) {
+                $userRow = $stmt->fetch(PDO::FETCH_ASSOC);
+                if ($userRow['lvl_id'] == 1) {
+                    $user_type_acro = "sd";
+                    $user_type = "student";
+                } else if ($userRow['lvl_id'] == 2) {
+                    $user_type_acro = "ind";
+                    $user_type = "instructor";
+                } else if ($userRow['lvl_id'] == 3) {
+                    $user_type_acro = "ad";
+                    $user_type = "admin";
+                }
+                $stmt = $admin->runQuery("DELETE FROM `" . $user_type . "s_has_account` WHERE `user_id` = '$user_id'");
+                $stmt->execute();
+            }
+
+            $statement = $admin->runQuery("DELETE FROM `user_account` WHERE `user_ID` = '$user_id'");
+            $result = $statement->execute();
 
             if (!empty($result)) {
                 echo 'Successfully Deleted';

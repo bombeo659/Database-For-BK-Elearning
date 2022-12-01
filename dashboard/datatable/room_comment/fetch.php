@@ -7,37 +7,39 @@ $query = '';
 $output = array();
 $query .= "SELECT 
 crc.*,
-ua.user_ID,
-ua.lvl_ID,
-ua.user_Img,
-(case  
-when (ua.lvl_ID = 1) then (SELECT CONCAT(rsd.rsd_FName,' ',rsd.rsd_MName,'. ',rsd.rsd_LName,' (',ul.lvl_Name,')') FROM record_student_details rsd WHERE rsd.user_ID = ua.user_ID)
-when (ua.lvl_ID = 2)  then (SELECT CONCAT(rid.rid_FName,' ',rid.rid_MName,'. ',rid.rid_LName,' (',ul.lvl_Name,')') FROM record_instructor_details rid WHERE rid.user_ID = ua.user_ID)
-when (ua.lvl_ID = 3)  then (SELECT CONCAT(rad.rad_FName,' ',rad.rad_MName,'. ',rad.rad_LName,' (',ul.lvl_Name,')') FROM record_admin_details rad WHERE rad.user_ID = ua.user_ID)
-end) Posted_By 
-";
+ua.user_id,
+ua.lvl_id,
+ua.user_img,
 
-$query .= " FROM `room_comment` `crc`
+(case  
+when (ua.lvl_id = 1) then (SELECT CONCAT(sd.sd_fname,' ',sd.sd_lname,' ',sd.sd_mname,' (',ul.lvl_Name,')') FROM student_details sd LEFT JOIN `students_has_account` `sha` ON `sha`.`sd_id` = `sd`.`sd_id` WHERE sha.user_id = ua.user_id)
+when (ua.lvl_id = 2)  then (SELECT CONCAT(ind.ind_fname,' ',ind.ind_lname,' ',ind.ind_mname,'  (',ul.lvl_Name,')') FROM instructor_details ind LEFT JOIN `instructors_has_account` `iha` ON `iha`.`ind_id` = `ind`.`ind_id` WHERE iha.user_id = ua.user_id)
+when (ua.lvl_id = 3)  then (SELECT CONCAT(ad.ad_fname,' ',ad.ad_lname,' ',ad.ad_mname,' (',ul.lvl_Name,')') FROM admin_details ad LEFT JOIN `admins_has_account` `aha` ON `aha`.`ad_id` = `ad`.`ad_id` WHERE aha.user_id = ua.user_id)
+end)  Posted_By ";
+
+
+
+$query .= " FROM `post_comment` `crc`
 LEFT JOIN `user_account` `ua` ON `ua`.`user_ID` = `crc`.`user_ID`
 LEFT JOIN `user_level` `ul` ON `ul`.`lvl_ID` = `ua`.`lvl_ID`
 ";
 
 if (isset($_REQUEST['post_ID'])) {
     $post_ID = $_REQUEST['post_ID'];
-    $query .= '  WHERE crc.post_ID =  ' . $post_ID . ' AND';
+    $query .= '  WHERE crc.post_id =  ' . $post_ID . ' AND';
 } else {
     $query .= ' WHERE';
 }
 
 if (isset($_POST["search"]["value"])) {
-    $query .= ' (comment_ID LIKE "%' . $_POST["search"]["value"] . '%" ';
-    $query .= ' OR comment_content LIKE "%' . $_POST["search"]["value"] . '%" )';
+    // $query .= ' (comment_ID LIKE "%' . $_POST["search"]["value"] . '%" ';
+    $query .= ' ( comment_content LIKE "%' . $_POST["search"]["value"] . '%" )';
 }
 
 if (isset($_POST["order"])) {
     $query .= ' ORDER BY ' . $_POST['order']['0']['column'] . ' ' . $_POST['order']['0']['dir'] . ' ';
 } else {
-    $query .= ' ORDER BY comment_ID ASC ';
+    $query .= ' ORDER BY comment_id ASC ';
 }
 
 if ($_POST["length"] != -1) {
@@ -51,16 +53,16 @@ $data = array();
 $filtered_rows = $statement->rowCount();
 $i = 1;
 foreach ($result as $row) {
-    if (!empty($row['user_Img'])) {
-        $s_img = 'data:image/jpeg;base64,' . base64_encode($row['user_Img']);
+    if (!empty($row['user_img'])) {
+        $s_img = 'data:image/jpeg;base64,' . base64_encode($row['user_img']);
     } else {
         $s_img = "../assets/img/users/default.jpg";
     }
     $sub_array = array();
 
-    if ($_SESSION['user_ID'] === $row["user_ID"] || ($_SESSION["lvl_ID"] != 1 && $row["lvl_ID"] != 3)) {
+    if ($_SESSION['user_id'] === $row["user_id"] || ($_SESSION["lvl_ID"] != 1 && $row["lvl_ID"] != 3)) {
         $delete_by_user_who_posted = '
-        <button type="button" class="close delete_comment" id="' . $row['comment_ID'] . '" aria-label="Close">
+        <button type="button" class="close delete_comment" id="' . $row['comment_id'] . '" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>';
     } else {
@@ -81,9 +83,9 @@ foreach ($result as $row) {
 }
 
 
-$q = "SELECT * FROM `room_comment` `crc`";
+$q = "SELECT * FROM `post_comment` `crc`";
 if (isset($post_ID)) {
-    $q .= ' WHERE `crc`.`post_ID` = ' . $post_ID . ' ';
+    $q .= ' WHERE `crc`.`post_id` = ' . $post_ID . ' ';
 }
 $filtered_rec = $room->get_total_all_records($q);
 $output = array(

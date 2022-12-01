@@ -13,9 +13,9 @@ if (isset($_POST["operation"])) {
         $admin_mname = $_POST["admin_mname"];
         $admin_lname = $_POST["admin_lname"];
         $admin_sex = $_POST["admin_sex"];
-        $admin_suffix = $_POST["admin_suffix"];
+        // $admin_suffix = $_POST["admin_suffix"];
         $admin_bday = $_POST["admin_bday"];
-        $admin_marital = $_POST["admin_marital"];
+        // $admin_marital = $_POST["admin_marital"];
         $admin_email = addslashes($_POST["admin_email"]);
         $admin_address = addslashes($_POST["admin_address"]);
 
@@ -25,20 +25,19 @@ if (isset($_POST["operation"])) {
             $new_img = '';
         }
 
-        $stmt1 = $admin->runQuery("SELECT rad_EmpID FROM `record_admin_details` WHERE rad_EmpID = $admin_EmpID LIMIT 1");
+        $stmt1 = $admin->runQuery("SELECT ad_empid FROM `admin_details` WHERE ad_empid = $admin_EmpID LIMIT 1");
         $stmt1->execute();
         $rs = $stmt1->fetchAll();
         if ($stmt1->rowCount() > 0) {
-            echo "Government ID Already Used";
+            echo "Admin ID Already Used";
         } else {
             try {
-                $stmt = $admin->runQuery("INSERT INTO `record_admin_details` 
-				(`rad_ID`, `rad_Img`, `user_ID`, `rad_EmpID`, `rad_FName`, `rad_MName`, `rad_LName`, `suffix_ID`, `sex_ID`, `marital_ID`, `rad_Email`, `rad_Bday`, `rad_Address`)
-				 VALUES (NULL, '$new_img', NULL, '$admin_EmpID', '$admin_fname', '$admin_mname', '$admin_lname', '$admin_suffix', '$admin_sex', '$admin_marital', '$admin_email', '$admin_bday', '$admin_address');");
+                $stmt = $admin->runQuery("INSERT INTO `admin_details` 
+				(`ad_id`, `ad_img`, `ad_empid`, `ad_fname`, `ad_mname`, `ad_lname`, `ad_gender`, `ad_email`, `ad_bday`, `ad_address`) VALUES (NULL, '$new_img', '$admin_EmpID', '$admin_fname', '$admin_mname', '$admin_lname', '$admin_sex', '$admin_email', '$admin_bday', '$admin_address');");
 
                 $result = $stmt->execute();
                 if (!empty($result)) {
-                    echo  "Admin Record Succesfully Added";
+                    echo  "Succesfully Added";
                 }
             } catch (PDOException $e) {
                 echo "There is some problem in connection: " . $e->getMessage();
@@ -53,40 +52,53 @@ if (isset($_POST["operation"])) {
         $admin_mname = $_POST["admin_mname"];
         $admin_lname = $_POST["admin_lname"];
         $admin_sex = $_POST["admin_sex"];
-        $admin_suffix = $_POST["admin_suffix"];
+        // $admin_suffix = $_POST["admin_suffix"];
         $admin_bday = $_POST["admin_bday"];
-        $admin_marital = $_POST["admin_marital"];
+        // $admin_marital = $_POST["admin_marital"];
         $admin_email = addslashes($_POST["admin_email"]);
         $admin_address = addslashes($_POST["admin_address"]);
 
-        if (isset($_FILES['admin_img']['tmp_name'])) {
+        if (isset($_FILES['admin_img']['tmp_name']) && $_FILES['admin_img']['tmp_name'] != "") {
             $new_img = addslashes(file_get_contents($_FILES['admin_img']['tmp_name']));
-            $set_img = "`rad_Img` = '$new_img' ,";
+            $set_img = "`ad_img` = '$new_img' ,";
+            $set_uimg = "`user_img` = '$new_img' ,";
         } else {
             $new_img = '';
             $set_img = '';
+            $set_uimg = '';
         }
 
         try {
             $stmt = $admin->runQuery("UPDATE 
-				`record_admin_details` 
+				`admin_details` 
 				SET 
 				" . $set_img . "
-				`rad_EmpID` = '$admin_EmpID' ,
-				`rad_FName` = '$admin_fname' ,
-				`rad_MName` = '$admin_mname' ,
-				`rad_LName` = '$admin_lname' ,
-				`suffix_ID` = '$admin_suffix' ,
-				`sex_ID` = '$admin_sex' ,
-				`marital_ID` = '$admin_marital' ,
-				`rad_Email` = '$admin_email' ,
-				`rad_Bday` = '$admin_bday' ,
-				`rad_Address` = '$admin_address' 
-				WHERE `rad_ID` = $admin_ID;");
+				`ad_empid` = '$admin_EmpID' ,
+				`ad_fname` = '$admin_fname' ,
+				`ad_mname` = '$admin_mname' ,
+				`ad_lname` = '$admin_lname' ,
+				`ad_gender` = '$admin_sex' ,
+				`ad_email` = '$admin_email' ,
+				`ad_bday` = '$admin_bday' ,
+				`ad_address` = '$admin_address' 
+				WHERE `ad_id` = $admin_ID;");
+				// `suffix_ID` = '$admin_suffix' ,
+				// `marital_ID` = '$admin_marital' ,
 
-            $result = $stmt->execute();
-            if (!empty($result)) {
-                echo  "Admin Record Succesfully Updated";
+            $result1 = $stmt->execute();
+
+            $query = "SELECT * FROM `admins_has_account` WHERE `ad_id` = $admin_ID";
+            $stmt = $admin->runQuery($query);
+            $stmt->execute();
+            if ($stmt->rowCount() == 1) {
+                $userRow = $stmt->fetch(PDO::FETCH_ASSOC);
+                $stmt = $admin->runQuery(
+                "UPDATE `user_account` SET " . $set_uimg. "  `user_name` = '$admin_EmpID' WHERE `user_id` = " . $userRow['user_id'] . ";");
+                $result2 = $stmt->execute();
+            }
+
+            if (!empty($result1)) {
+                echo  "Successfully Updated";
             }
         } catch (PDOException $e) {
             echo "There is some problem in connection: " . $e->getMessage();
@@ -94,19 +106,32 @@ if (isset($_POST["operation"])) {
     }
 
     if ($_POST["operation"] == "delete_admin") {
-        $statement = $admin->runQuery(
-            "DELETE FROM `record_admin_details` WHERE `rad_ID` = :admin_ID"
-        );
-        $result = $statement->execute(
-            array(
-                ':admin_ID'    =>    $_POST["admin_ID"]
-            )
-        );
-
-        if (!empty($result)) {
-            echo 'Successfully Deleted';
+        try {
+            $admin_id = $_POST["admin_ID"];
+            $query = "SELECT * FROM `admins_has_account` WHERE `ad_id` = $admin_id";
+            $stmt = $admin->runQuery($query);
+            $stmt->execute();
+            if ($stmt->rowCount() == 1) {
+                $userRow = $stmt->fetch(PDO::FETCH_ASSOC);
+                $acc_id = $userRow['user_id'];
+                $stmt = $admin->runQuery("DELETE FROM `admins_has_account` WHERE `ad_id` = '$admin_id'");
+                $result2 = $stmt->execute();
+                $stmt = $admin->runQuery("DELETE FROM `user_account` WHERE `user_id` = '$acc_id'");
+                $result2 = $stmt->execute();
+            }
+            $statement = $admin->runQuery(
+                "DELETE FROM `admin_details` WHERE `ad_id` = $admin_id;"
+            );
+            $result = $statement->execute();
+    
+            if (!empty($result)) {
+                echo 'Successfully Deleted';
+            }
+        } catch (PDOException $e) {
+            echo "There is some problem in connection: " . $e->getMessage();
         }
     }
+
     if ($_POST["operation"] == "gen_account") {
         $admin_ID = $_POST["admin_ID"];
 

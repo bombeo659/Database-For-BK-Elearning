@@ -14,13 +14,13 @@ class USER
 	public function doLogin($login_user, $login_password)
 	{
 		try {
-			$stmt = $this->conn->prepare("SELECT user_ID, lvl_ID, user_Name, user_Pass, user_Img FROM user_account WHERE user_Name=:user_Name");
+			$stmt = $this->conn->prepare("SELECT user_id, lvl_ID, user_Name, user_Pass, user_Img FROM user_account WHERE user_Name=:user_Name");
 			$stmt->execute(array(':user_Name' => $login_user));
 			$userRow = $stmt->fetch(PDO::FETCH_ASSOC);
 			if ($stmt->rowCount() == 1) {
 				if (password_verify($login_password, $userRow['user_Pass'])) {
 					$_SESSION['lvl_ID'] = $userRow['lvl_ID'];
-					$_SESSION['user_ID'] = $userRow['user_ID'];
+					$_SESSION['user_id'] = $userRow['user_id'];
 					$_SESSION['user_Name'] = $userRow['user_Name'];
 					if (!empty($userRow['user_Img'])) {
 						$s_img = 'data:image/jpeg;base64,' . base64_encode($userRow['user_Img']);
@@ -38,36 +38,36 @@ class USER
 		}
 	}
 	// register function
-	public function register($reg_studentnum, $reg_password, $reg_email)
-	{
-		try {
-			$stmt = $this->conn->prepare("SELECT * FROM `record_student_details` WHERE rsd_StudNum = :reg_studentnum OR rsd_Email = :reg_email LIMIT 1");
-			$stmt->bindparam(":reg_studentnum", $reg_studentnum);
-			$stmt->bindparam(":reg_email", $reg_email);
-			$stmt->execute();
-			$userRow = $stmt->fetch(PDO::FETCH_ASSOC);
-			if ($stmt->rowCount() == 1) {
-				$rsd_ID = $userRow["rsd_ID"];
-				$new_password = password_hash($reg_password, PASSWORD_DEFAULT);
+	// public function register($reg_studentnum, $reg_password, $reg_email)
+	// {
+	// 	try {
+	// 		$stmt = $this->conn->prepare("SELECT * FROM `record_student_details` WHERE rsd_StudNum = :reg_studentnum OR rsd_Email = :reg_email LIMIT 1");
+	// 		$stmt->bindparam(":reg_studentnum", $reg_studentnum);
+	// 		$stmt->bindparam(":reg_email", $reg_email);
+	// 		$stmt->execute();
+	// 		$userRow = $stmt->fetch(PDO::FETCH_ASSOC);
+	// 		if ($stmt->rowCount() == 1) {
+	// 			$rsd_ID = $userRow["rsd_ID"];
+	// 			$new_password = password_hash($reg_password, PASSWORD_DEFAULT);
 
-				$stmt = $this->conn->prepare("INSERT INTO `user_account` (`user_ID`, `lvl_ID`, `user_Img`, `user_Name`, `user_Pass`, `user_Registered`) VALUES (NULL, 1, NULL, :reg_studentnum, :reg_password, CURRENT_TIMESTAMP);");
+	// 			$stmt = $this->conn->prepare("INSERT INTO `user_account` (`user_id`, `lvl_ID`, `user_Img`, `user_Name`, `user_Pass`, `user_Registered`) VALUES (NULL, 1, NULL, :reg_studentnum, :reg_password, CURRENT_TIMESTAMP);");
 
-				$stmt->bindparam(":reg_studentnum", $reg_studentnum);
-				$stmt->bindparam(":reg_password", $new_password);
-				$stmt->execute();
-				$user_ID = $this->conn->lastInsertId();
+	// 			$stmt->bindparam(":reg_studentnum", $reg_studentnum);
+	// 			$stmt->bindparam(":reg_password", $new_password);
+	// 			$stmt->execute();
+	// 			$user_id = $this->conn->lastInsertId();
 
-				$stmt = $this->conn->prepare("UPDATE `record_student_details` SET `user_ID` = :user_ID WHERE `record_student_details`.`rsd_ID` = :rsd_ID;");
-				$stmt->bindparam(":user_ID", $user_ID);
-				$stmt->bindparam(":rsd_ID", $rsd_ID);
-				$stmt->execute();
+	// 			$stmt = $this->conn->prepare("UPDATE `record_student_details` SET `user_id` = :user_id WHERE `record_student_details`.`rsd_ID` = :rsd_ID;");
+	// 			$stmt->bindparam(":user_id", $user_id);
+	// 			$stmt->bindparam(":rsd_ID", $rsd_ID);
+	// 			$stmt->execute();
 
-				return $stmt;
-			}
-		} catch (PDOException $e) {
-			echo $e->getMessage();
-		}
-	}
+	// 			return $stmt;
+	// 		}
+	// 	} catch (PDOException $e) {
+	// 		echo $e->getMessage();
+	// 	}
+	// }
 
 	public function check_accesslevel($page_level)
 	{
@@ -94,7 +94,7 @@ class USER
 	// check isLogin -> if true -> go to dashboard
     public function is_loggedin()
 	{
-		if (isset($_SESSION['user_ID'])) {
+		if (isset($_SESSION['user_id'])) {
 			return true;
 		}
 	}
@@ -103,7 +103,7 @@ class USER
 	public function doLogout()
 	{
 		session_destroy();
-		unset($_SESSION['user_ID']);
+		unset($_SESSION['user_id']);
 		return true;
 	}
 
@@ -131,17 +131,17 @@ class USER
 		$user_type_acro = "";
 		if ($_SESSION['lvl_ID'] == "1") {
 			$user_type = "student";
-			$user_type_acro = "rsd";
+			$user_type_acro = "sd";
 		}
 		if ($_SESSION['lvl_ID'] == "2") {
 			$user_type = "instructor";
-			$user_type_acro = "rid";
+			$user_type_acro = "ind";
 		}
 		if ($_SESSION['lvl_ID'] == "3") {
 			$user_type = "admin";
-			$user_type_acro = "rad";
+			$user_type_acro = "ad";
 		}
-		$query = "SELECT " . $user_type_acro . "_FName," . $user_type_acro . "_MName," . $user_type_acro . "_LName FROM `record_" . $user_type . "_details` WHERE user_ID = " . $_SESSION['user_ID'];
+		$query = "SELECT A." . $user_type_acro . "_FName, A." . $user_type_acro . "_MName, A." . $user_type_acro . "_LName FROM `" . $user_type . "_details` A JOIN " . $user_type . "s_has_account B ON A." .$user_type_acro . "_id = B." . $user_type_acro . "_id WHERE `B`.`user_id` = " . $_SESSION['user_id'];
 		$stmt = $this->conn->prepare($query);
 		$stmt->execute();
 		$result = $stmt->fetchAll();
@@ -149,8 +149,8 @@ class USER
 			foreach ($result as $row) {
 				$full_name = "";
 				$full_name .= $row[$user_type_acro . "_FName"] . " ";
-				// $full_name .= $row[$user_type_acro . "_MName"] . " ";
-				$full_name .= $row[$user_type_acro . "_LName"];
+				$full_name .= $row[$user_type_acro . "_LName"] . " ";
+				$full_name .= $row[$user_type_acro . "_MName"];
 			}
 			echo $full_name;
 		} else {
@@ -163,22 +163,25 @@ class USER
 		$user_type = "";
 		if ($_SESSION['lvl_ID'] == "1") {
 			$user_type = "student";
+			$user_type_acro = "sd";
 		}
 		if ($_SESSION['lvl_ID'] == "2") {
 			$user_type = "instructor";
+			$user_type_acro = "ind";
 		}
 		if ($_SESSION['lvl_ID'] == "3") {
 			$user_type = "admin";
+			$user_type_acro = "ad";
 		}
-		$query = "SELECT sex_Name FROM `record_" . $user_type . "_details`  rid
-				LEFT JOIN ref_sex sex ON sex.sex_ID = rid.sex_ID
-				WHERE rid.user_ID = " . $_SESSION['user_ID'];
+
+		$query = "SELECT `" . $user_type_acro . "_gender`  FROM `" . $user_type . "_details` A JOIN " . $user_type . "s_has_account B ON A." .$user_type_acro . "_id = B." . $user_type_acro . "_id WHERE `B`.`user_id` = " . $_SESSION['user_id'];
+
 		$stmt = $this->conn->prepare($query);
 		$stmt->execute();
 		$result = $stmt->fetchAll();
 		if ($stmt->rowCount() == 1) {
 			foreach ($result as $row) {
-				echo $row["sex_Name"];
+				echo $row[$user_type_acro . "_gender"];
 			}
 		} else {
 			echo "Empty";
@@ -191,17 +194,20 @@ class USER
 		$id_type = "";
 		if ($_SESSION['lvl_ID'] == "1") {
 			$user_type = "student";
-			$id_type = "rsd_StudNum";
+			$id_type = "sd_StudNum";
+			$user_type_acro = "sd";
 		}
 		if ($_SESSION['lvl_ID'] == "2") {
 			$user_type = "instructor";
-			$id_type = "rid_EmpID";
+			$id_type = "ind_EmpID";
+			$user_type_acro = "ind";
 		}
 		if ($_SESSION['lvl_ID'] == "3") {
 			$user_type = "admin";
-			$id_type = "rad_EmpID";
+			$id_type = "ad_EmpID";
+			$user_type_acro = "ad";
 		}
-		$query = "SELECT " . $id_type . " FROM `record_" . $user_type . "_details` WHERE user_ID = " . $_SESSION['user_ID'];
+		$query = "SELECT A." . $id_type . " FROM `" . $user_type . "_details` A JOIN " . $user_type . "s_has_account B ON A." .$user_type_acro . "_id = B." . $user_type_acro . "_id WHERE `B`.`user_id` = " . $_SESSION['user_id'];
 		$stmt = $this->conn->prepare($query);
 		$stmt->execute();
 		$result = $stmt->fetchAll();
@@ -220,17 +226,17 @@ class USER
 		$user_type_acro = "";
 		if ($_SESSION['lvl_ID'] == "1") {
 			$user_type = "student";
-			$user_type_acro = "rsd";
+			$user_type_acro = "sd";
 		}
 		if ($_SESSION['lvl_ID'] == "2") {
 			$user_type = "instructor";
-			$user_type_acro = "rid";
+			$user_type_acro = "ind";
 		}
 		if ($_SESSION['lvl_ID'] == "3") {
 			$user_type = "admin";
-			$user_type_acro = "rad";
+			$user_type_acro = "ad";
 		}
-		$query = "SELECT " . $user_type_acro . "_Email FROM `record_" . $user_type . "_details` WHERE user_ID = " . $_SESSION['user_ID'];
+		$query = "SELECT A." . $user_type_acro . "_email FROM `" . $user_type . "_details` A JOIN " . $user_type . "s_has_account B ON A." .$user_type_acro . "_id = B." . $user_type_acro . "_id WHERE `B`.`user_id` = " . $_SESSION['user_id'];
 		$stmt = $this->conn->prepare($query);
 		$stmt->execute();
 		$result = $stmt->fetchAll();
@@ -238,7 +244,7 @@ class USER
 
 		if ($stmt->rowCount() == 1) {
 			foreach ($result as $row) {
-				echo $row[$user_type_acro . "_Email"];
+				echo $row[$user_type_acro . "_email"];
 			}
 		} else {
 			echo "Empty";
@@ -251,26 +257,38 @@ class USER
 		$user_type_acro = "";
 		if ($_SESSION['lvl_ID'] == "1") {
 			$user_type = "student";
-			$user_type_acro = "rsd";
+			$user_type_acro = "sd";
 		}
 		if ($_SESSION['lvl_ID'] == "2") {
 			$user_type = "instructor";
-			$user_type_acro = "rid";
+			$user_type_acro = "ind";
 		}
 		if ($_SESSION['lvl_ID'] == "3") {
 			$user_type = "admin";
-			$user_type_acro = "rad";
+			$user_type_acro = "ad";
 		}
-		$query = "SELECT " . $user_type_acro . "_Address FROM `record_" . $user_type . "_details` WHERE user_ID = " . $_SESSION['user_ID'];
+		$query = "SELECT A." . $user_type_acro . "_address FROM `" . $user_type . "_details` A JOIN " . $user_type . "s_has_account B ON A." .$user_type_acro . "_id = B." . $user_type_acro . "_id WHERE `B`.`user_id` = " . $_SESSION['user_id'];
 		$stmt = $this->conn->prepare($query);
 		$stmt->execute();
 		$result = $stmt->fetchAll();
 		if ($stmt->rowCount() == 1) {
 			foreach ($result as $row) {
-				echo $row[$user_type_acro . "_Address"];
+				echo $row[$user_type_acro . "_address"];
 			}
 		} else {
 			echo "Empty";
+		}
+	}
+
+	public function ref_subject()
+	{
+		$query = "SELECT * FROM `subject`";
+		$stmt = $this->conn->prepare($query);
+		$stmt->execute();
+		$result = $stmt->fetchAll();
+
+		foreach ($result as $row) {
+			echo '<option value="' . $row["subject_id"] . '">' . $row["subject_name"] . '</option>';
 		}
 	}
 
@@ -287,19 +305,19 @@ class USER
 	}
 	public function ref_semester()
 	{
-		$query = "SELECT *,CONCAT(YEAR(sem_start),' - ',YEAR(sem_end)) sem_year FROM `ref_semester`";
+		$query = "SELECT *,CONCAT(YEAR(sem_start),' - ',YEAR(sem_end)) sem_year FROM `semester` ORDER BY status_id ASC ";
 		$stmt = $this->conn->prepare($query);
 		$stmt->execute();
 		$result = $stmt->fetchAll();
 
 		foreach ($result as $row) {
-			$stat_ID = $row["stat_ID"];
+			$stat_ID = $row["status_id"];
 			if ($stat_ID == "1") {
 				$stat = " (Active)";
 			} else {
 				$stat = " (Deactivate)";
 			}
-			echo '<option value="' . $row["sem_ID"] . '">' . $row["sem_year"] . $stat . '</option>';
+			echo '<option value="' . $row["sem_id"] . '">' . $row["sem_year"] . $stat . '</option>';
 		}
 	}
 
@@ -323,6 +341,18 @@ class USER
 
 		foreach ($result as $row) {
 			echo '<option value="' . $row["status_ID"] . '">' . $row["status_Name"] . '</option>';
+		}
+	}
+
+	public function user_faculty_option()
+	{
+		$query = "SELECT * FROM `faculty`";
+		$stmt = $this->conn->prepare($query);
+		$stmt->execute();
+		$result = $stmt->fetchAll();
+
+		foreach ($result as $row) {
+			echo '<option value="' . $row["faculty_id"] . '">' . $row["faculty_name"] . '</option>';
 		}
 	}
 
@@ -393,46 +423,40 @@ class USER
 		$output = array();
 		try {
 			$query = "SELECT 
-			rm.room_ID,
-			rid.rid_FName,
-			rid.rid_MName,
-			rid.rid_LName,
-			sn.suffix,
-			sec.section_Name,
+			cla.class_id,
+			cla.class_name,
+			cla.subject_id,
+			sub.subject_name,
+			ind.ind_fname,
+			ind.ind_mname,
+			ind.ind_lname,
+			ind.ind_id,
+			CONCAT(ind.ind_fname,' ', ind.ind_lname,' ', ind.ind_mname) class_adviser,
 			CONCAT(YEAR(sem.sem_start),' - ',YEAR(sem.sem_end)) semyear,
-			sta.status_Name
-			FROM `room` rm 
-			LEFT JOIN record_instructor_details rid ON rid.rid_ID = rm.rid_ID
-			LEFT JOIN ref_suffixname sn ON sn.suffix_ID = rid.suffix_ID
-			LEFT JOIN ref_section sec ON sec.section_ID = rm.section_ID
-			LEFT JOIN ref_semester sem ON sem.sem_ID = rm.sem_ID
-			LEFT JOIN ref_status sta ON sta.status_ID  = rm.status_ID
+			stat.status_id,
+			stat.status FROM `class` `cla`
+			LEFT JOIN `instructor_details` `ind` ON `ind`.`ind_id` = `cla`.`ind_id`
+			LEFT JOIN `status` `stat` ON `stat`.`status_id` = `cla`.`status_id`
+			LEFT JOIN `subject` `sub` ON `sub`.`subject_id` = `cla`.`subject_id`
+			LEFT JOIN `semester` `sem` ON `sem`.`sem_id` = `sub`.`sem_id`
+			WHERE class_id = '" . $room_ID . "' LIMIT 1";
 
-			WHERE rm.room_ID = '$room_ID' LIMIT 1";
 			$stmt = $this->conn->prepare($query);
 			$stmt->execute();
 			$result = $stmt->fetchAll();
 
 			if ($stmt->rowCount() == 1) {
 				foreach ($result as $row) {
-					if ($row["suffix"] == "N/A") {
-						$suffix = "";
-					} else {
-						$suffix = $row["suffix"];
-					}
-					if ($row["rid_MName"] == " " || $row["rid_MName"] == NULL || empty($row["rid_MName"])) {
-						$mname = " ";
-					} else {
-						$mname = $row["rid_MName"] . '. ';
-					}
-					$output["fullname"] =  $row["rid_FName"] . ' ' . $mname . $row["rid_LName"] . ' ' . $suffix;
+					$output["fullname"] =  $row["class_adviser"];
 					$output["schoolyear"] =  $row["semyear"];
-					$output["sectionname"] =  $row["section_Name"];
+					$output["subject_name"] =  $row["subject_name"];
+					$output["class_name"] =  $row["class_name"];
 				}
 			} else {
 				$output["fullname"] =  "Empty";
 				$output["schoolyear"] =  "Empty";
-				$output["sectionname"] =  "Empty";
+				$output["subject_name"] =  "Empty";
+				$output["class_name"] =  "Empty";
 			}
 			return $output;
 		} catch (PDOException $e) {

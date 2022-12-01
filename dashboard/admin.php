@@ -107,10 +107,13 @@ $pageTitle = "Manage Admin";
                         <thead>
                             <tr>
                                 <th>#</th>
+                                <th></th>
                                 <th>Admin ID</th>
                                 <th>Name</th>
                                 <th>Sex</th>
-                                <th>Marital</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
                                 <th>Account Status</th>
                                 <th></th>
                             </tr>
@@ -141,49 +144,52 @@ $pageTitle = "Manage Admin";
 
                                             </div>
                                             <div class="form-group col-md-4">
-                                                <label for="admin_EmpID">School ID<span class="text-danger">*</span></label>
+                                                <label for="admin_EmpID">Admin ID<span class="text-danger">*</span></label>
                                                 <input type="number" class="form-control" id="admin_EmpID" name="admin_EmpID" placeholder="" value="" required="">
                                             </div>
-                                            <div class="form-group col-md-3">
+                                            <div class="form-group col-md-4">
                                                 <label for="admin_fname">First Name<span class="text-danger">*</span></label>
                                                 <input type="text" class="form-control" id="admin_fname" name="admin_fname" placeholder="" value="" required="">
                                             </div>
-                                            <div class="form-group col-md-3">
+                                            <div class="form-group col-md-4">
                                                 <label for="admin_mname">Middle Name<span class="text-danger">*</span></label>
                                                 <input type="text" class="form-control" id="admin_mname" name="admin_mname" placeholder="" value="" required="">
                                             </div>
-                                            <div class="form-group col-md-3">
+                                            <div class="form-group col-md-4">
                                                 <label for="admin_lname">Last Name<span class="text-danger">*</span></label>
                                                 <input type="text" class="form-control" id="admin_lname" name="admin_lname" placeholder="" value="" required="">
                                             </div>
-                                            <div class="form-group col-md-3">
+                                            <!-- <div class="form-group col-md-3">
                                                 <label for="admin_suffix">Suffix<span class="text-danger">*</span></label>
                                                 <select class="form-control" id="admin_suffix" name="admin_suffix">
                                                     <?php
-                                                    $auth_user->user_suffix_option();
+                                                    // $auth_user->user_suffix_option();
                                                     ?>
                                                 </select>
-                                            </div>
-                                            <div class="form-group col-md-4">
+                                            </div> -->
+                                            <div class="form-group col-md-6">
                                                 <label for="admin_bday">Birthday<span class="text-danger">*</span></label>
                                                 <input type="date" class="form-control" id="admin_bday" name="admin_bday" placeholder="" value="" required="">
                                             </div>
-                                            <div class="form-group col-md-4">
+                                            <div class="form-group col-md-6">
                                                 <label for="admin_sex">Sex<span class="text-danger">*</span></label>
                                                 <select class="form-control" id="admin_sex" name="admin_sex" required="">
+                                                    <option value="Male">Male</option>
+                                                    <option value="Female">Female</option>
+                                                    <option value="Orther">Other</option>
                                                     <?php
-                                                    $auth_user->user_sex_option();
+                                                    // $auth_user->user_sex_option();
                                                     ?>
                                                 </select>
                                             </div>
-                                            <div class="form-group col-md-4">
+                                            <!-- <div class="form-group col-md-4">
                                                 <label for="admin_marital">Marital<span class="text-danger">*</span></label>
                                                 <select class="form-control" id="admin_marital" name="admin_marital" required="">
                                                     <?php
-                                                    $auth_user->user_marital_option();
+                                                    // $auth_user->user_marital_option();
                                                     ?>
                                                 </select>
-                                            </div>
+                                            </div> -->
                                             <div class="form-group col-md-12">
                                                 <label for="admin_email">Email<span class="text-danger">*</span></label>
                                                 <input type="email" class="form-control" id="admin_email" name="admin_email" placeholder="" value="" required="">
@@ -199,8 +205,8 @@ $pageTitle = "Manage Admin";
                                         <input type="hidden" name="admin_ID" id="admin_ID" />
                                         <input type="hidden" name="operation" id="operation" />
                                         <div class="btn-group" id='sbtng'>
-                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                            <button type="submit" class="btn btn-primary submit" id="submit_input" value="submit_admin">Submit</button>
+                                            <button type="button" class="btn btn-secondary rounded mr-1" data-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-primary submit rounded" id="submit_input" value="submit_admin">Submit</button>
                                         </div>
                                     </div>
                                 </form>
@@ -263,6 +269,7 @@ $pageTitle = "Manage Admin";
             var admin_dataTable = $('#admin_data').DataTable({
                 "processing": true,
                 "serverSide": true,
+                "ordering": false,
                 "order": [],
                 "ajax": {
                     url: "datatable/admin/fetch.php",
@@ -274,6 +281,10 @@ $pageTitle = "Manage Admin";
                 }, ],
 
             });
+            admin_dataTable.columns([1]).visible(false);
+            admin_dataTable.columns([5]).visible(false);
+            admin_dataTable.columns([6]).visible(false);
+            admin_dataTable.columns([7]).visible(false);
 
             $(document).on('submit', '#admin_form', function(event) {
                 event.preventDefault();
@@ -383,6 +394,7 @@ $pageTitle = "Manage Admin";
 
             $(document).on('click', '.edit', function() {
                 var admin_ID = $(this).attr("id");
+                var acreg = $(this).attr("acreg");
                 $('#admin_modal_title').text('View Student');
                 $('#admin_modal').modal('show');
 
@@ -403,6 +415,11 @@ $pageTitle = "Manage Admin";
                     },
                     dataType: 'json',
                     success: function(data) {
+                        // if (acreg == "UN") {
+                        //     $("#admin_EmpID").prop("disabled", false);
+                        // } else {
+                        //     $("#admin_EmpID").prop("disabled", true);
+                        // }
                         $("#admin_EmpID").prop("disabled", false);
                         $("#admin_fname").prop("disabled", false);
                         $("#admin_mname").prop("disabled", false);
@@ -437,32 +454,56 @@ $pageTitle = "Manage Admin";
             });
 
             $(document).on('click', '.delete', function() {
-                var admin_ID = $(this).attr("id");
-                $('#deladmin_modal').modal('show');
-                // $('.submit').hide();
-
-                $('#admin_ID').val(admin_ID);
-            });
-
-            $(document).on('click', '#admin_delform', function(event) {
-                var admin_ID = $('#admin_ID').val();
-                $.ajax({
-                    type: 'POST',
-                    url: "datatable/admin/insert.php",
-                    data: {
-                        operation: "delete_admin",
-                        admin_ID: admin_ID
+                var admin_id = $(this).attr("id");
+                alertify.confirm('Are you sure you want to delete this admin?',
+                    function() {
+                        $.ajax({
+                            type: 'POST',
+                            url: "datatable/admin/insert.php",
+                            data: {
+                                operation: "delete_admin",
+                                admin_ID: admin_id
+                            },
+                            dataType: 'json',
+                            complete: function(data) {
+                                alertify.alert(data.responseText).setHeader('Delete Admin');
+                                admin_dataTable.ajax.reload();
+                            }
+                        })
                     },
-                    dataType: 'json',
-                    complete: function(data) {
-                        $('#deladmin_modal').modal('hide');
-                        alertify.alert(data.responseText).setHeader('Delete this Student');
-                        admin_dataTable.ajax.reload();
-
+                    function() {
+                        alertify.error('Cancel')
                     }
-                })
-
+                ).setHeader('Delete Admin');
             });
+
+            // $(document).on('click', '.delete', function() {
+            //     var admin_ID = $(this).attr("id");
+            //     $('#deladmin_modal').modal('show');
+            //     // $('.submit').hide();
+
+            //     $('#admin_ID').val(admin_ID);
+            // });
+
+            // $(document).on('click', '#admin_delform', function(event) {
+            //     var admin_ID = $('#admin_ID').val();
+            //     $.ajax({
+            //         type: 'POST',
+            //         url: "datatable/admin/insert.php",
+            //         data: {
+            //             operation: "delete_admin",
+            //             admin_ID: admin_ID
+            //         },
+            //         dataType: 'json',
+            //         complete: function(data) {
+            //             $('#deladmin_modal').modal('hide');
+            //             alertify.alert(data.responseText).setHeader('Delete this Student');
+            //             admin_dataTable.ajax.reload();
+
+            //         }
+            //     })
+
+            // });
 
             $(document).on('click', '.gen_account', function(event) {
                 var admin_ID = $(this).attr("id");

@@ -1,5 +1,5 @@
 <?php
-require_once('../class.function.php');
+require_once('../class-function.php');
 $section = new DTFunction(); 
 
 if (isset($_POST['action'])) {

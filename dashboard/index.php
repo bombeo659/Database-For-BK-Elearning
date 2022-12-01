@@ -112,7 +112,7 @@ $pageTitle = "Dashboard";
                                     <div class="col-lg-8">
                                         <h3><b>Name:</b> <?php $auth_user->profile_name() ?> </h3>
                                         <h3><b>Student ID:</b> <?php $auth_user->profile_school_id() ?></h3>
-                                        <h3><b>Sex:</b> <?php $auth_user->profile_sex() ?></h3>
+                                        <h3><b>Gender:</b> <?php $auth_user->profile_sex() ?></h3>
                                     </div>
                                 </div>
                             </div>
@@ -134,7 +134,7 @@ $pageTitle = "Dashboard";
                                     <div class="col-lg-8">
                                         <h3><b>Name:</b> <?php $auth_user->profile_name() ?> </h3>
                                         <h3><b>Teacher ID:</b> <?php $auth_user->profile_school_id() ?></h3>
-                                        <h3><b>Sex:</b> <?php $auth_user->profile_sex() ?></h3>
+                                        <h3><b>Gender:</b> <?php $auth_user->profile_sex() ?></h3>
                                     </div>
                                 </div>
                             </div>

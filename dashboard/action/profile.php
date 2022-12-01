@@ -52,20 +52,21 @@ if (isset($_POST['action'])) {
             $id_type = "ad";
         }
 
-        $query = "SELECT * FROM `" . $user_type . "s_has_account` WHERE `user_id` = " . $user_id;
-        $stmt = $profile->runQuery($query);
-        $stmt->execute();
-        $userRow = $stmt->fetch(PDO::FETCH_ASSOC);
-
         if (isset($_FILES['change_profile']['tmp_name'])) {
             $new_img = addslashes(file_get_contents($_FILES['change_profile']['tmp_name']));
             $stmt = $profile->runQuery("UPDATE `user_account` SET `user_img` = '$new_img' WHERE `user_id` = $user_id;");
-            $result = $stmt->execute();
+            $result1 = $stmt->execute();
 
-            $stmt = $profile->runQuery("UPDATE `" . $user_type . "_details` SET `" . $id_type . "_img` = '.$new_img' WHERE `" . $id_type . "_id` = " . $userRow[$id_type .'_id'] .";");
-            $result = $stmt->execute();
+            $query = "SELECT * FROM `" . $user_type . "s_has_account` WHERE `user_id` = " . $user_id;
+            $stmt = $profile->runQuery($query);
+            $stmt->execute();
+            if ($stmt->rowCount() == 1) {
+                $userRow = $stmt->fetch(PDO::FETCH_ASSOC);
+                $stmt = $profile->runQuery("UPDATE `" . $user_type . "_details` SET `" . $id_type . "_img` = '$new_img' WHERE `" . $id_type . "_id` = " . $userRow[$id_type .'_id'] .";");
+                $result2 = $stmt->execute();
+            }
 
-            if (!empty($result)) {
+            if (!empty($result1)) {
                 $output['success'] = "Change profile image succesfully!";
                 $profile->getUserPic($user_id);
             } else {

@@ -8,40 +8,38 @@ session_start();
 $query = '';
 $output = array();
 
-$query .= "SELECT 
-rm.room_ID,
-rid.rid_FName,
-rid.rid_MName,
-rid.rid_LName,
-rsn.suffix,
-CONCAT(rid.rid_FName,' ', rid.rid_MName,' ', rid.rid_LName,' ', rsn.suffix) room_adviser,
-sec.section_Name,
-CONCAT(YEAR(sem.sem_start),' - ',YEAR(sem.sem_end)) semyear ,
-stat.status_Name";
+$query .= "SELECT
+`cla`.`class_id`, `cla`.`status_id`, 
+CONCAT(`cla`.`class_name`,' - ',`sub`.`subject_name`) classname,
+CONCAT(`ind`.`ind_fname`,' ', `ind`.`ind_lname`,' ', `ind`.`ind_mname`) class_adviser,
+CONCAT(YEAR(`sem`.`sem_start`),' - ',YEAR(`sem`.`sem_end`)) semyear
+from  `class` `cla` 
+LEFT JOIN `instructor_details` `ind` ON `ind`.`ind_id` = `cla`.`ind_id`
+left join `subject` `sub` on `cla`.`subject_id` = `sub`.`subject_id` 
+LEFT JOIN `semester` `sem` ON `sem`.`sem_id` = `sub`.`sem_id`";
 
-$query .= " FROM `room` `rm`
-LEFT JOIN `ref_section` `sec` ON `sec`.`section_ID` = `rm`.`section_ID`
-LEFT JOIN `record_instructor_details` `rid` ON `rid`.`rid_ID` = `rm`.`rid_ID`
-LEFT JOIN `ref_suffixname` `rsn` ON `rsn`.`suffix_ID` = `rid`.`suffix_ID`
-LEFT JOIN `ref_semester` `sem` ON sem.sem_ID = `rm`.`sem_ID`
-LEFT JOIN `ref_status` `stat` ON `stat`.`status_ID` = `rm`.`status_ID`";
+// where `sd_id` in (select `sd_id` from `students_has_account` where `user_id` = 2);
 
-if (isset($_SESSION['user_ID'])) {
-    $user_ID = $_SESSION['user_ID'];
-    $query .= ' WHERE rid.user_ID = ' . $user_ID . ' AND ';
+if (isset($_SESSION['user_id'])) {
+    $user_ID = $_SESSION['user_id'];
+    $query .= ' where `cla`.`ind_id` in (select `ind_id` from `instructors_has_account` where `user_id` = ' . $user_ID . ') AND';
 } else {
-    $query .= ' WHERE ';
+    $query .= ' WHERE';
 }
 
 if (isset($_POST["search"]["value"])) {
-    $query .= ' (section_Name LIKE "%' . $_POST["search"]["value"] . '%" ';
-    $query .= ' OR status_Name LIKE "%' . $_POST["search"]["value"] . '%" )';
+    $query .= '(class_name LIKE "%' . $_POST["search"]["value"] . '%" ';
+    $query .= 'OR subject_name LIKE "%' . $_POST["search"]["value"] . '%" ';
+    $query .= 'OR ind_lname LIKE "%' . $_POST["search"]["value"] . '%" ';
+    $query .= 'OR sem_start LIKE "%' . $_POST["search"]["value"] . '%" ';
+    $query .= 'OR sem_end LIKE "%' . $_POST["search"]["value"] . '%" ';
+    $query .= 'OR ind_fname LIKE "%' . $_POST["search"]["value"] . '%" )';
 }
-
+$query .= ' ORDER BY status_id ASC, subject_name ASC, class_name ASC ';
 if (isset($_POST["order"])) {
-    $query .= ' ORDER BY ' . $_POST['order']['0']['column'] . ' ' . $_POST['order']['0']['dir'] . ' ';
+    $query .=  $_POST['order']['0']['column'] . ' ' . $_POST['order']['0']['dir'] . ' ';
 } else {
-    $query .= ' ORDER BY room_ID ASC ';
+    $query .= '';
 }
 
 if ($_POST["length"] != -1) {
@@ -53,31 +51,29 @@ $statement->execute();
 $result = $statement->fetchAll();
 $data = array();
 $filtered_rows = $statement->rowCount();
+$i =1;
 foreach ($result as $row) {
-    if ($row["suffix"] == "N/A") {
-        $suffix = "";
+    $stat_ID = $row["status_id"];
+    if ($stat_ID == "1") {
+        $stat = "<span class='badge badge-success'>Activate</span>";
     } else {
-        $suffix = $row["suffix"];
-    }
-
-    if ($row["rid_MName"] == " " || $row["rid_MName"] == NULL || empty($row["rid_MName"])) {
-        $mname = " ";
-    } else {
-        $mname = $row["rid_MName"] . '. ';
+        $stat = "<span class='badge badge-danger'>Deactivate</span>";
     }
 
     $sub_array = array();
-    $sub_array[] = $row["room_ID"];
-    $sub_array[] =  $row["rid_FName"] . ' ' . $mname . $row["rid_LName"] . ' ' . $suffix;
-    $sub_array[] = $row["section_Name"];
+    $sub_array[] = $i;
+    $sub_array[] = $row["class_id"];
+    $sub_array[] = $row["classname"];
+    $sub_array[] = $row["class_adviser"];
     $sub_array[] = $row["semyear"];
-    $sub_array[] = $row["status_Name"];
+    $sub_array[] = $stat;
     $sub_array[] = '
-    <a  class="btn btn-secondary btn-sm"  href="room_announcement?room_ID=' . $row["room_ID"] . '">View</a>';
+    <a  class="btn btn-secondary btn-sm"  href="room_announcement?room_ID=' . $row["class_id"] . '">View</a>';
     $data[] = $sub_array;
+    $i++;
 }
 
-$q = "SELECT * FROM `room`";
+$q = "SELECT * from `class` where `ind_id` in (select `ind_id` from `instructors_has_account` where `user_id` = " . $user_ID .");";
 $filtered_rec = $room->get_total_all_records($q);
 
 $output = array(

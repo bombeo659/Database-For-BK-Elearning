@@ -10,8 +10,8 @@ if (isset($_POST["operation"])) {
             $post_title = $_POST["post_title"];
             $post_content = $_POST["post_content"];
 
-            $sql = "INSERT INTO `room_post` 
-			(`post_ID`, `user_ID`, `room_ID`, `post_Name`, `post_Description`, `post_Date`) 
+            $sql = "INSERT INTO `post` 
+			(`post_id`, `user_id`, `class_id`, `post_name`, `post_description`, `post_date`) 
 			VALUES (NULL, :user_ID, :room_ID, :post_title, :post_content, CURRENT_TIMESTAMP);";
             
             $statement = $room->runQuery($sql);
@@ -20,7 +20,7 @@ if (isset($_POST["operation"])) {
                     ':post_title'        =>    $post_title,
                     ':post_content'      =>    $post_content,
                     ':room_ID'        =>    $room_ID,
-                    ':user_ID'        =>    $_SESSION["user_ID"],
+                    ':user_ID'        =>    $_SESSION["user_id"],
                 )
             );
 
@@ -38,8 +38,7 @@ if (isset($_POST["operation"])) {
             $room_ID = $_POST["room_ID"];
             $post_ID = $_POST["post_ID"];
 
-            $sql = "UPDATE `room_post` SET `post_Description` = :post_content, `post_Name` = :post_title
-			WHERE `post_ID` = :post_ID AND `room_ID` = :room_ID;";
+            $sql = "UPDATE `post` SET `post_description` = :post_content, `post_name` = :post_title, `post_date` = CURRENT_TIMESTAMP WHERE `post_id` = :post_ID AND `class_id` = :room_ID;";
             
             $statement = $room->runQuery($sql);
             $result = $statement->execute(
@@ -47,7 +46,7 @@ if (isset($_POST["operation"])) {
                     ':post_title'        =>    $post_title,
                     ':post_content'      =>    $post_content,
                     ':post_ID'        =>    $post_ID,
-                    ':room_ID'        =>    $room_ID,
+                    ':room_ID'        =>    $room_ID
                 )
             );
             if (!empty($result)) {
@@ -60,7 +59,7 @@ if (isset($_POST["operation"])) {
 
     if ($_POST["operation"] == "post_delete") {
         try {
-            $statement = $room->runQuery("DELETE FROM `room_post` WHERE `post_ID` = :post_ID");
+            $statement = $room->runQuery("DELETE FROM `post` WHERE `post_id` = :post_ID");
             $result = $statement->execute(array(':post_ID'  =>  $_POST["post_ID"]));
             if (!empty($result)) {
                 echo 'Successfully Deleted';
@@ -72,12 +71,12 @@ if (isset($_POST["operation"])) {
 
     if ($_POST["operation"] == "post_comment") {
         try {
-            $user_ID = $_SESSION['user_ID'];
+            $user_ID = $_SESSION['user_id'];
             $comment = $_POST['comment'];
             $post_ID = $_POST['post_ID'];
     
             $statement = $room->runQuery(
-                "INSERT INTO `room_comment` (`comment_ID`, `user_ID`, `post_ID`, `comment_content`, `comment_Date`)
+                "INSERT INTO `post_comment` (`comment_id`, `user_id`, `post_id`, `comment_content`, `comment_date`)
                  VALUES (NULL, :user_ID, :post_ID, :comment, CURRENT_TIMESTAMP);"
             );
             $result = $statement->execute(
@@ -98,7 +97,7 @@ if (isset($_POST["operation"])) {
     if ($_POST["operation"] == "delete_comment") {
         try {
             $statement = $room->runQuery(
-                "DELETE FROM `room_comment` WHERE `comment_ID` = :comment_ID"
+                "DELETE FROM `post_comment` WHERE `comment_id` = :comment_ID"
             );
             $result = $statement->execute(
                 array(

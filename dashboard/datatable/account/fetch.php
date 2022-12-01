@@ -7,17 +7,17 @@ $query = '';
 $output = array();
 $query .= "SELECT * ";
 $query .= " FROM `user_account` `ua`
-LEFT JOIN `user_level` `ul` ON `ul`.`lvl_ID` = `ua`.`lvl_ID`";
+LEFT JOIN `user_level` `ul` ON `ul`.`lvl_id` = `ua`.`lvl_id`";
 
 if (isset($_POST["search"]["value"])) {
-    $query .= ' WHERE user_ID LIKE "%' . $_POST["search"]["value"] . '%" ';
-    $query .= ' OR user_Name LIKE "%' . $_POST["search"]["value"] . '%" ';
+    $query .= ' WHERE user_id LIKE "%' . $_POST["search"]["value"] . '%" ';
+    $query .= ' OR user_name LIKE "%' . $_POST["search"]["value"] . '%" ';
 }
 
 if (isset($_POST["order"])) {
     $query .= ' ORDER BY ' . $_POST['order']['0']['column'] . ' ' . $_POST['order']['0']['dir'] . ' ';
 } else {
-    $query .= ' ORDER BY ua.lvl_ID DESC ';
+    $query .= ' ORDER BY ua.lvl_id DESC ';
 }
 
 if ($_POST["length"] != -1) {
@@ -33,24 +33,24 @@ $i = 1;
 foreach ($result as $row) {
     $sub_array = array();
 
-    if ($row["lvl_Name"] == "Instructor") {
+    if ($row["lvl_name"] == "Instructor") {
         $lvlname = "Teacher";
     } else {
-        $lvlname = $row["lvl_Name"];
+        $lvlname = $row["lvl_name"];
     }
 
     $sub_array[] = $i;
-    $sub_array[] = $row["user_ID"];
+    $sub_array[] = $row["user_id"];
     $sub_array[] =  $lvlname;
-    $sub_array[] =  $row["user_Name"];
-    $sub_array[] =  $row["user_Registered"];
+    $sub_array[] =  $row["user_name"];
+    $sub_array[] =  $row["user_registered"];
     $sub_array[] = '
     <div class="">
-        <button type="button" class="btn btn-secondary btn-sm change" id="' . $row["user_ID"] . '" >
+        <button type="button" class="btn btn-info btn-sm change" id="' . $row["user_id"] . '" >
             Change Password
         </button>
+        <button class="btn btn-danger btn-sm delete_account" id="'.$row["user_id"].'">Delete</button>
     </div>';
-            // <button class="btn btn-danger btn-sm delete_account" id="'.$row["user_ID"].'">Delete</button>
     $data[] = $sub_array;
     $i++;
 }

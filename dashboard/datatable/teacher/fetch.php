@@ -5,35 +5,39 @@ $teacher = new DTFunction();           // Create new connection by passing in yo
 $query = '';
 $output = array();
 $query .= "SELECT 
-`rid`.`rid_ID`,
-`rid`.`rid_Img`,
-`rid`.`rid_EmpID`,
-`rid`.`rid_FName`,
-`rid`.`rid_MName`,
-`rid`.`rid_LName`,
-`rid`.`user_ID`,
-`rs`.`sex_Name`,
-`rm`.`marital_Name`,
-`sf`.`suffix` ";
-$query .= " FROM `record_instructor_details` `rid`
-LEFT JOIN `ref_marital` `rm` ON `rm`.`marital_ID` = `rid`.`marital_ID`
-LEFT JOIN `ref_sex` `rs` ON `rs`.`sex_ID` = `rid`.`sex_ID`
-LEFT JOIN `ref_suffixname` `sf` ON `sf`.`suffix_ID` = `rid`.`suffix_ID`";
+`ind`.`ind_id`,
+`ind`.`ind_img`,
+`ind`.`ind_empid`,
+`ind`.`ind_fname`,
+`ind`.`ind_mname`,
+`ind`.`ind_lname`,
+`ind`.`ind_gender`,
+`ind`.`ind_bday`,
+`ind`.`ind_address`,
+`ind`.`ind_email`,
+`iha`.`user_id`";
+// -- `rm`.`marital_Name`,
+// -- `sf`.`suffix` ";
+$query .= " FROM `instructor_details` `ind`
+LEFT JOIN `instructors_has_account` `iha` ON `iha`.`ind_id` = `ind`.`ind_id`";
+// LEFT JOIN `ref_marital` `rm` ON `rm`.`marital_ID` = `ind`.`marital_ID`
+// LEFT JOIN `ref_sex` `rs` ON `rs`.`sex_ID` = `ind`.`sex_ID`
+// LEFT JOIN `ref_suffixname` `sf` ON `sf`.`suffix_ID` = `ind`.`suffix_ID`";
 
 if (isset($_POST["search"]["value"])) {
-    $query .= ' WHERE rid_ID LIKE "%' . $_POST["search"]["value"] . '%" ';
-    $query .= ' OR rid_EmpID LIKE "%' . $_POST["search"]["value"] . '%" ';
-    $query .= ' OR rid_FName LIKE "%' . $_POST["search"]["value"] . '%" ';
-    $query .= ' OR rid_MName LIKE "%' . $_POST["search"]["value"] . '%" ';
-    $query .= ' OR rid_LName LIKE "%' . $_POST["search"]["value"] . '%" ';
-    $query .= ' OR suffix LIKE "%' . $_POST["search"]["value"] . '%" ';
-    $query .= ' OR sex_Name LIKE "%' . $_POST["search"]["value"] . '%" ';
+    // $query .= ' WHERE ind_ID LIKE "%' . $_POST["search"]["value"] . '%" ';
+    $query .= ' WHERE ind_empid LIKE "%' . $_POST["search"]["value"] . '%" ';
+    $query .= ' OR ind_fname LIKE "%' . $_POST["search"]["value"] . '%" ';
+    $query .= ' OR ind_mname LIKE "%' . $_POST["search"]["value"] . '%" ';
+    $query .= ' OR ind_lname LIKE "%' . $_POST["search"]["value"] . '%" ';
+    // $query .= ' OR suffix LIKE "%' . $_POST["search"]["value"] . '%" ';
+    $query .= ' OR ind_gender LIKE "%' . $_POST["search"]["value"] . '%" ';
 }
 
 if (isset($_POST["order"])) {
     $query .= ' ORDER BY ' . $_POST['order']['0']['column'] . ' ' . $_POST['order']['0']['dir'] . ' ';
 } else {
-    $query .= ' ORDER BY rid_ID ASC ';
+    $query .= ' ORDER BY ind_fname ASC ';
 }
 
 if ($_POST["length"] != -1) {
@@ -47,24 +51,24 @@ $data = array();
 $filtered_rows = $statement->rowCount();
 $i = 1;
 foreach ($result as $row) {
-    if ($row["suffix"] == "N/A") {
-        $suffix = "";
+    // if ($row["suffix"] == "N/A") {
+    //     $suffix = "";
+    // } else {
+    //     $suffix = $row["suffix"];
+    // }
+
+    if ($row["ind_mname"] == " " || $row["ind_mname"] == NULL || empty($row["ind_mname"])) {
+        $mname = "";
     } else {
-        $suffix = $row["suffix"];
+        $mname = $row["ind_mname"];
     }
 
-    if ($row["rid_MName"] == " " || $row["rid_MName"] == NULL || empty($row["rid_MName"])) {
-        $mname = " ";
-    } else {
-        $mname = $row["rid_MName"] . '. ';
-    }
-
-    if (empty($row["user_ID"])) {
+    if (empty($row["user_id"])) {
         $reg = "<span class='badge badge-danger'>Unregistered</span>";
         $acreg = "UN";
 
         $btnrg = '
-		<button type="button" class="btn btn-success btn-sm gen_account" id="' . $row["rid_ID"] . '"><i class="icon-key" style="font-size: 20px;"></i></button>';
+		<button type="button" class="btn btn-success btn-sm gen_account" id="' . $row["ind_id"] . '"><i class="icon-key" style="font-size: 20px;"></i></button>';
     } else {
         $reg = "<span class='badge badge-success'>Registered</span>";
         $acreg = "RG";
@@ -72,17 +76,17 @@ foreach ($result as $row) {
     }
     $sub_array = array();
     $sub_array[] = $i;
-    $sub_array[] = $row["rid_ID"];
-    $sub_array[] =  $row["rid_EmpID"];
-    $sub_array[] =  $row["rid_FName"] . ' ' . $mname . $row["rid_LName"] . ' ' . $suffix;
-    $sub_array[] =  $row["sex_Name"];
-    $sub_array[] =  $row["marital_Name"];
+    $sub_array[] = $row["ind_id"];
+    $sub_array[] =  $row["ind_empid"];
+    $sub_array[] =  $row["ind_fname"] . ' ' . $row["ind_lname"] . ' ' . $mname;
+    $sub_array[] =  $row["ind_gender"];
+    // $sub_array[] =  $row["marital_Name"];
     $sub_array[] =  $reg;
     $sub_array[] = '
     <div class="" role="group" aria-label="Basic example" >
-        <button type="button" class="btn btn-info btn-sm view" id="' . $row["rid_ID"] . '">View</button>
-        <button type="button" class="btn btn-primary btn-sm edit" acreg="' . $acreg . '"  id="' . $row["rid_ID"] . '">Edit</button>
-        <button type="button" class="btn btn-danger btn-sm delete" id="' . $row["rid_ID"] . '">Delete</button>
+        <button type="button" class="btn btn-info btn-sm view" id="' . $row["ind_id"] . '">View</button>
+        <button type="button" class="btn btn-primary btn-sm edit" acreg="' . $acreg . '"  id="' . $row["ind_id"] . '">Edit</button>
+        <button type="button" class="btn btn-danger btn-sm delete" id="' . $row["ind_id"] . '">Delete</button>
         ' . $btnrg . '
     </div>';
 
@@ -90,7 +94,7 @@ foreach ($result as $row) {
     $i++;
 }
 
-$q = "SELECT * FROM `record_instructor_details`";
+$q = "SELECT * FROM `instructor_details`";
 $filtered_rec = $teacher->get_total_all_records($q);
 
 $output = array(

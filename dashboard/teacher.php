@@ -112,7 +112,7 @@ $pageTitle = "Manage Teacher";
                                 <th>Teacher ID</th>
                                 <th>Name</th>
                                 <th>Sex</th>
-                                <th>Marital</th>
+                                <!-- <th>Marital</th> -->
                                 <th>Account Status</th>
                                 <th></th>
                             </tr>
@@ -149,46 +149,49 @@ $pageTitle = "Manage Teacher";
                                                 <label for="teacher_EmpID">Teacher ID<span class="text-danger">*</span></label>
                                                 <input type="number" class="form-control" id="teacher_EmpID" name="teacher_EmpID" placeholder="" value="" required="">
                                             </div>
-                                            <div class="form-group col-md-3">
+                                            <div class="form-group col-md-4">
                                                 <label for="teacher_fname">First Name<span class="text-danger">*</span></label>
                                                 <input type="text" class="form-control" id="teacher_fname" name="teacher_fname" placeholder="" value="" required="">
                                             </div>
-                                            <div class="form-group col-md-3">
+                                            <div class="form-group col-md-4">
                                                 <label for="teacher_mname">Middle Name<span class="text-danger">*</span></label>
                                                 <input type="text" class="form-control" id="teacher_mname" name="teacher_mname" placeholder="" value="" required="">
                                             </div>
-                                            <div class="form-group col-md-3">
+                                            <div class="form-group col-md-4">
                                                 <label for="teacher_lname">Last Name<span class="text-danger">*</span></label>
                                                 <input type="text" class="form-control" id="teacher_lname" name="teacher_lname" placeholder="" value="" required="">
                                             </div>
-                                            <div class="form-group col-md-3">
+                                            <!-- <div class="form-group col-md-3">
                                                 <label for="teacher_suffix">Suffix<span class="text-danger">*</span></label>
                                                 <select class="form-control" id="teacher_suffix" name="teacher_suffix">
                                                     <?php
-                                                    $auth_user->user_suffix_option();
+                                                    // $auth_user->user_suffix_option();
                                                     ?>
                                                 </select>
-                                            </div>
-                                            <div class="form-group col-md-4">
+                                            </div> -->
+                                            <div class="form-group col-md-6">
                                                 <label for="teacher_bday">Birthday<span class="text-danger">*</span></label>
                                                 <input type="date" class="form-control" id="teacher_bday" name="teacher_bday" placeholder="" value="" required="">
                                             </div>
-                                            <div class="form-group col-md-4">
+                                            <div class="form-group col-md-6">
                                                 <label for="teacher_sex">Sex<span class="text-danger">*</span></label>
                                                 <select class="form-control" id="teacher_sex" name="teacher_sex" required="">
+                                                    <option value="Male">Male</option>
+                                                    <option value="Female">Female</option>
+                                                    <option value="Orther">Other</option>
                                                     <?php
-                                                    $auth_user->user_sex_option();
+                                                    // $auth_user->user_sex_option();
                                                     ?>
                                                 </select>
                                             </div>
-                                            <div class="form-group col-md-4">
+                                            <!-- <div class="form-group col-md-4">
                                                 <label for="teacher_marital">Marital<span class="text-danger">*</span></label>
                                                 <select class="form-control" id="teacher_marital" name="teacher_marital" required="">
                                                     <?php
-                                                    $auth_user->user_marital_option();
+                                                    // $auth_user->user_marital_option();
                                                     ?>
                                                 </select>
-                                            </div>
+                                            </div> -->
                                             <div class="form-group col-md-12">
                                                 <label for="teacher_email">Email<span class="text-danger">*</span></label>
                                                 <input type="email" class="form-control" id="teacher_email" name="teacher_email" placeholder="" value="" required="">
@@ -204,8 +207,8 @@ $pageTitle = "Manage Teacher";
                                         <input type="hidden" name="teacher_ID" id="teacher_ID" />
                                         <input type="hidden" name="operation" id="operation" />
                                         <div class="btn-group" id='sbtng'>
-                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                            <button type="submit" class="btn btn-primary submit" id="submit_input" value="submit_teacher">Submit</button>
+                                            <button type="button" class="btn rounded mr-1 btn-secondary" data-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn rounded btn-primary submit" id="submit_input" value="submit_teacher">Submit</button>
                                         </div>
                                     </div>
                                 </form>
@@ -284,10 +287,8 @@ $pageTitle = "Manage Teacher";
             teacher_dataTable.columns([1]).visible(false);
 
 
-
             $(document).on('submit', '#teacher_form', function(event) {
                 event.preventDefault();
-
                 $.ajax({
                     url: "datatable/teacher/insert.php",
                     method: 'POST',
@@ -318,13 +319,12 @@ $pageTitle = "Manage Teacher";
                 $("#teacher_fname").prop("disabled", false);
                 $("#teacher_mname").prop("disabled", false);
                 $("#teacher_lname").prop("disabled", false);
-                $("#teacher_suffix").prop("disabled", false);
+                // $("#teacher_suffix").prop("disabled", false);
                 $("#teacher_bday").prop("disabled", false);
                 $("#teacher_sex").prop("disabled", false);
-                $("#teacher_marital").prop("disabled", false);
+                // $("#teacher_marital").prop("disabled", false);
                 $("#teacher_email").prop("disabled", false);
                 $("#teacher_address").prop("disabled", false);
-
 
                 $("#teacher_img").show();
                 $('#submit_input').show();
@@ -337,16 +337,13 @@ $pageTitle = "Manage Teacher";
             $(document).on('click', '.view', function() {
                 var teacher_ID = $(this).attr("id");
 
-
                 $('#teacher_modal_title').text('View Teacher');
                 $('#teacher_modal').modal('show');
-
 
                 $('#submit_input').hide();
                 var btng = document.getElementById("sbtng");
                 btng.className = btng.className.replace(/\bbtn-group\b/g, "");
                 btng.classList.add("btng_null");
-
 
                 $("#teacher_img").hide();
 
@@ -363,24 +360,22 @@ $pageTitle = "Manage Teacher";
                         $("#teacher_fname").prop("disabled", true);
                         $("#teacher_mname").prop("disabled", true);
                         $("#teacher_lname").prop("disabled", true);
-                        $("#teacher_suffix").prop("disabled", true);
+                        // $("#teacher_suffix").prop("disabled", true);
                         $("#teacher_bday").prop("disabled", true);
                         $("#teacher_sex").prop("disabled", true);
-                        $("#teacher_marital").prop("disabled", true);
+                        // $("#teacher_marital").prop("disabled", true);
                         $("#teacher_email").prop("disabled", true);
                         $("#teacher_address").prop("disabled", true);
-
-
 
                         $('#s_img').attr('src', data.teacher_img);
                         $('#teacher_EmpID').val(data.teacher_EmpID);
                         $('#teacher_fname').val(data.teacher_fname);
                         $('#teacher_mname').val(data.teacher_mname);
                         $('#teacher_lname').val(data.teacher_lname);
-                        $('#teacher_suffix').val(data.teacher_suffix).change();
+                        // $('#teacher_suffix').val(data.teacher_suffix).change();
                         $('#teacher_bday').val(data.teacher_bday);
                         $('#teacher_sex').val(data.teacher_sex).change();
-                        $('#teacher_marital').val(data.teacher_marital).change();
+                        // $('#teacher_marital').val(data.teacher_marital).change();
                         $('#teacher_email').val(data.teacher_email);
                         $('#teacher_address').val(data.teacher_address);
 
@@ -389,11 +384,8 @@ $pageTitle = "Manage Teacher";
                         $('#submit_input').text('Update');
                         $('#submit_input').val('teacher_view');
                         $('#operation').val("teacher_view");
-
                     }
                 });
-
-
             });
 
 
@@ -402,7 +394,6 @@ $pageTitle = "Manage Teacher";
                 var acreg = $(this).attr("acreg");
                 $('#teacher_modal_title').text('View teacher');
                 $('#teacher_modal').modal('show');
-
 
                 var btng = document.getElementById("sbtng");
                 btng.className = btng.className.replace(/\btng_null\b/g, "");
@@ -419,12 +410,13 @@ $pageTitle = "Manage Teacher";
                     },
                     dataType: 'json',
                     success: function(data) {
-                        if (acreg == "UN") {
-                            $("#teacher_EmpID").prop("disabled", false);
-                        } else {
-                            $("#teacher_EmpID").prop("disabled", true);
-
-                        }
+                        // if (acreg == "UN") {
+                        //     $("#teacher_EmpID").prop("disabled", false);
+                        // } else {
+                        //     $("#teacher_EmpID").prop("disabled", true);
+                        // }
+                        
+                        $("#teacher_EmpID").prop("disabled", false);
                         $("#teacher_fname").prop("disabled", false);
                         $("#teacher_mname").prop("disabled", false);
                         $("#teacher_lname").prop("disabled", false);
@@ -434,7 +426,6 @@ $pageTitle = "Manage Teacher";
                         $("#teacher_marital").prop("disabled", false);
                         $("#teacher_email").prop("disabled", false);
                         $("#teacher_address").prop("disabled", false);
-
 
                         $('#s_img').attr('src', data.teacher_img);
                         $('#teacher_EmpID').val(data.teacher_EmpID);
@@ -453,11 +444,8 @@ $pageTitle = "Manage Teacher";
                         $('#submit_input').text('Update');
                         $('#submit_input').val('teacher_update');
                         $('#operation').val("teacher_update");
-
                     }
                 });
-
-
             });
 
             $(document).on('click', '.delete', function() {
@@ -528,21 +516,16 @@ $pageTitle = "Manage Teacher";
                             complete: function(data) {
                                 alertify.alert(data.responseText).setHeader('Generated Account');
                                 teacher_dataTable.ajax.reload();
-
                             }
                         })
-
                         teacher_dataTable.ajax.reload();
-                        alertify.success('Ok')
+                        // alertify.success('Ok')
                     },
                     function() {
                         alertify.error('Cancel')
-                    }).setHeader('Generate Account');
-
+                    }
+                ).setHeader('Generate Account');
             });
-
-
-
         });
     </script>
 </body>

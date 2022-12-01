@@ -63,40 +63,43 @@ class DTFunction
             $user_type_acro = "";
 
             if ($user_type == "student") {
-                $user_type_acro = "rsd";
-                $sc_id = "rsd_StudNum";
+                $user_type_acro = "sd";
+                $sc_id = "sd_studnum";
                 $slvl = 1;
             }
             if ($user_type == "instructor") {
-                $user_type_acro = "rid";
-                $sc_id = "rid_EmpID";
+                $user_type_acro = "ind";
+                $sc_id = "ind_empid";
                 $slvl = 2;
             }
             if ($user_type == "admin") {
-                $user_type_acro = "rad";
-                $sc_id = "rad_EmpID";
+                $user_type_acro = "ad";
+                $sc_id = "ad_empid";
                 $slvl = 3;
             }
-            $q1 = "SELECT * FROM `record_" . $user_type . "_details` WHERE " . $user_type_acro . "_ID = '$id'";
+
+            $q1 = "SELECT * FROM `" . $user_type . "_details` WHERE " . $user_type_acro . "_id = '$id'";
             $stmt1 = $this->conn->prepare($q1);
             $stmt1->execute();
             $result1 = $stmt1->fetchAll();
 
             foreach ($result1 as $row) {
-                $firstname = $row[$user_type_acro . "_FName"];
+                $firstname = $row[$user_type_acro . "_fname"];
                 $sc_id = $row[$sc_id];
             }
+            
             $ac_user = $sc_id;
             $ac_pass = strtolower($firstname) . '123';
 
             $n_pass = password_hash($ac_pass, PASSWORD_DEFAULT);
 
-            $q2 = "INSERT INTO `user_account` (`user_ID`, `lvl_ID`, `user_Img`, `user_Name`, `user_Pass`, `user_Registered`) VALUES (NULL, '$slvl', NULL, '$ac_user', '$n_pass', CURRENT_TIMESTAMP);";
+            $q2 = "INSERT INTO `user_account` (`user_id`, `lvl_id`, `user_img`, `user_name`, `user_pass`, `user_registered`) VALUES (NULL, '$slvl', NULL, '$ac_user', '$n_pass', CURRENT_TIMESTAMP);";
             $stmt2 = $this->conn->prepare($q2);
             $stmt2->execute();
             $last_id = $this->conn->lastInsertId();
 
-            $q3  = "UPDATE `record_" . $user_type . "_details` SET `user_ID` = '$last_id' WHERE `" . $user_type_acro . "_ID` = '$id'";
+            $q3 = "INSERT INTO `" . $user_type . "s_has_account` (`user_id`, `" . $user_type_acro . "_id`) VALUES ('$last_id', '$id');";
+            // $q3  = "UPDATE `record_" . $user_type . "_details` SET `user_ID` = '$last_id' WHERE `" . $user_type_acro . "_ID` = '$id'";
             $stmt3 = $this->conn->prepare($q3);
             $r3 = $stmt3->execute();
 
