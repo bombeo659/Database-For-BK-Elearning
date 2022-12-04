@@ -5,8 +5,8 @@ class Database
     private $host = "localhost";
     // private $db_name = "ass_db";
     private $db_name = "bk_elearning";
-    private $username = "nqt";
-    private $password = "";
+    private $username = "root";
+    private $password = "anhvan09";
     public $conn;
 
     public function dbConnection()

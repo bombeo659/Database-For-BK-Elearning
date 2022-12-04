@@ -91,16 +91,6 @@ create table faculty(
     constraint f_pk primary key (faculty_id)
 );
 
-create table subject( 
-	subject_id integer not null auto_increment, 
-    subject_name varchar(85),
-    -- ind_id integer not null,
-    faculty_id integer not null,
-    constraint s_pk primary key (subject_id),
-    -- constraint s_fk1 foreign key (ind_id) references instructor_details(ind_id),
-    constraint s_fk2 foreign key (faculty_id) references faculty(faculty_id)
-);
-
 create table status (
 	status_id integer not null auto_increment,
     status varchar(25),
@@ -116,23 +106,31 @@ create table semester(
     constraint sm_fk foreign key (status_id) references status(status_id)
 );
 
+create table subject( 
+	subject_id integer not null auto_increment, 
+    subject_name varchar(85),
+    sem_id integer not null,
+    faculty_id integer not null,
+    constraint s_pk primary key (subject_id),
+    constraint s_fk1 foreign key (sem_id) references semester(sem_id),
+    constraint s_fk2 foreign key (faculty_id) references faculty(faculty_id)
+);
+
 create table class( 
 	class_id integer not null auto_increment,
     subject_id integer not null,
     status_id integer not null,
-    -- sem_id integer not null,
 	constraint c_pk primary key (class_id),
     constraint c_fk1 foreign key (status_id) references status(status_id),
-    constraint c_fk2 foreign key (subject_id) references subject(subject_id)
-    -- constraint c_fk3 foreign key (sem_id) references semester(sem_id)
+    constraint c_fk2 foreign key (subject_id) references subject(subject_id) on delete cascade on update cascade
 );
 
 create table class_student( 
 	class_id integer not null,
     sd_id integer not null,
     constraint cs_pk primary key (class_id, sd_id),
-    constraint cs_fk1 foreign key (class_id) references class(class_id),
-    constraint cs_fk2 foreign key (sd_id) references student_details(sd_id)
+    constraint cs_fk1 foreign key (class_id) references class(class_id) on delete cascade on update cascade,
+    constraint cs_fk2 foreign key (sd_id) references student_details(sd_id) on delete cascade on update cascade
 );
 
 create table post( 
@@ -274,26 +272,19 @@ INSERT INTO `bk_elearning`.`faculty` (`faculty_id`, `faculty_name`) VALUES ('6',
 INSERT INTO `bk_elearning`.`faculty` (`faculty_id`, `faculty_name`) VALUES ('7', 'Industrial Management');
 INSERT INTO `bk_elearning`.`faculty` (`faculty_id`, `faculty_name`) VALUES ('8', 'Transportation Engineering');
 
-
-INSERT INTO `bk_elearning`.`subject` (`subject_id`, `subject_name`, `ind_id`, `faculty_id`) VALUES ('1', 'Database Systems', '1', '1');
-INSERT INTO `bk_elearning`.`subject` (`subject_id`, `subject_name`, `ind_id`, `faculty_id`) VALUES ('2', 'Embedded System', '1', '1');
-
-
-ALTER TABLE subject DROP FOREIGN KEY s_fk1;
-ALTER TABLE subject DROP COLUMN ind_id;
-
-ALTER TABLE class ADD ind_id integer not null;
-ALTER TABLE class ADD constraint c_fk4 FOREIGN KEY (ind_id) references instructor_details(ind_id);
-
-
 INSERT INTO `bk_elearning`.`status` (`status_id`, `status`) VALUES ('1', 'Enable');
 INSERT INTO `bk_elearning`.`status` (`status_id`, `status`) VALUES ('2', 'Disable');
 
 INSERT INTO `bk_elearning`.`semester` (`sem_id`, `sem_start`, `sem_end`, `status_id`) VALUES ('1', '2021-09-01', '2022-05-01', '2');
 INSERT INTO `bk_elearning`.`semester` (`sem_id`, `sem_start`, `sem_end`, `status_id`) VALUES ('2', '2022-09-01', '2023-05-01', '1');
 
-INSERT INTO `bk_elearning`.`class` (`class_id`, `subject_id`, `status_id`, `sem_id`, `ind_id`) VALUES ('1', '1', '1', '2', '1');
+INSERT INTO `bk_elearning`.`subject` (`subject_id`, `subject_name`, `sem_id`, `faculty_id`) VALUES ('1', 'Database Systems', '2', '1');
+INSERT INTO `bk_elearning`.`subject` (`subject_id`, `subject_name`, `sem_id`, `faculty_id`) VALUES ('2', 'Embedded System', '2', '1');
+
+ALTER TABLE class ADD ind_id integer not null;
+ALTER TABLE class ADD constraint c_fk4 FOREIGN KEY (ind_id) references instructor_details(ind_id);
+
+INSERT INTO `bk_elearning`.`class` (`class_id`, `subject_id`, `status_id`, `ind_id`) VALUES ('1', '1', '1', '1');
 
 alter table class add column class_name varchar(30);
 
--- sem_id from class -> subject
