@@ -40,7 +40,7 @@ git clone https://github.com/bombeo659/Database-For-BK-Elearning.git
 |1915886         |123             | student        |
 
 
-## Browser Support
+Browser Support
 ----------
 - Microsoft Edge (Latest)
 - Mozilla Firefox (Latest)
@@ -49,7 +49,7 @@ git clone https://github.com/bombeo659/Database-For-BK-Elearning.git
 - Safari (Latest)
 - Brave (Latest)
 
-## Change Logs
+Change Logs
 ----------
 See  **[commits](https://github.com/bombeo659/Database-For-BK-Elearning/commits/main)**
 
