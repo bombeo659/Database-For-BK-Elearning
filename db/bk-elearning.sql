@@ -257,11 +257,14 @@ INSERT INTO `bk_elearning`.`user_level` (`lvl_id`, `lvl_name`) VALUES ('2', 'Ins
 INSERT INTO `bk_elearning`.`user_level` (`lvl_id`, `lvl_name`) VALUES ('3', 'Admin');
 
 INSERT INTO `bk_elearning`.`student_details` (`sd_id`, `sd_studnum`, `sd_fname`, `sd_lname`, `sd_gender`) VALUES ('1', '1915676', 'Trong', 'Nguyen', 'Male');
+INSERT INTO `bk_elearning`.`student_details` (`sd_id`, `sd_studnum`, `sd_fname`, `sd_lname`, `sd_gender`) VALUES ('2', '1915886', 'Van', 'Nguyen', 'Male');
 
 INSERT INTO `bk_elearning`.`instructor_details` (`ind_id`, `ind_empid`, `ind_fname`, `ind_lname`, `ind_gender`) VALUES ('1', '1234500', 'Anh', 'Pham', 'Male');
 
-INSERT INTO `bk_elearning`.`user_account` (`user_id`, `lvl_id`, `user_name`, `user_pass`) VALUES ('2', '1', '1915676', '$2y$10$qBZV0Aqz6aqn1akRuA02e.acXxhtxqOdWW/eQZsRln4j1YCCRqyp2');
-INSERT INTO `bk_elearning`.`user_account` (`user_id`, `lvl_id`, `user_name`, `user_pass`) VALUES ('3', '2', '1234500', '$2y$10$qBZV0Aqz6aqn1akRuA02e.acXxhtxqOdWW/eQZsRln4j1YCCRqyp2');
+INSERT INTO `bk_elearning`.`user_account` (`user_id`, `lvl_id`, `user_name`, `user_pass`) VALUES (NULL, '3', 'admin', '$2y$10$//h0t8eRfxInUe6LNS9FLOZ5UpqLCPEfUbyHncGBRJ1yGPbOIxFmy');
+INSERT INTO `bk_elearning`.`user_account` (`user_id`, `lvl_id`, `user_name`, `user_pass`) VALUES ('2', '1', '1915676', '$2y$10$xAefNlSgH1glfUDG08egG.NERBqplNE0A904d2DdmrZsuxJC8Lqjy');
+INSERT INTO `bk_elearning`.`user_account` (`user_id`, `lvl_id`, `user_name`, `user_pass`) VALUES ('3', '1', '1915886', '$2y$10$xAefNlSgH1glfUDG08egG.NERBqplNE0A904d2DdmrZsuxJC8Lqjy');
+INSERT INTO `bk_elearning`.`user_account` (`user_id`, `lvl_id`, `user_name`, `user_pass`) VALUES ('4', '2', '1234500', '$2y$10$xAefNlSgH1glfUDG08egG.NERBqplNE0A904d2DdmrZsuxJC8Lqjy');
 
 INSERT INTO `bk_elearning`.`faculty` (`faculty_id`, `faculty_name`) VALUES ('1', 'Computer Science and Engineering');
 INSERT INTO `bk_elearning`.`faculty` (`faculty_id`, `faculty_name`) VALUES ('2', 'Electrical and Electronics Engineering');
@@ -287,4 +290,3 @@ ALTER TABLE class ADD constraint c_fk4 FOREIGN KEY (ind_id) references instructo
 INSERT INTO `bk_elearning`.`class` (`class_id`, `subject_id`, `status_id`, `ind_id`) VALUES ('1', '1', '1', '1');
 
 alter table class add column class_name varchar(30);
-

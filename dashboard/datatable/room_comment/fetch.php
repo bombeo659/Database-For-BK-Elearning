@@ -60,7 +60,7 @@ foreach ($result as $row) {
     }
     $sub_array = array();
 
-    if ($_SESSION['user_id'] === $row["user_id"] || ($_SESSION["lvl_ID"] != 1 && $row["lvl_ID"] != 3)) {
+    if ($_SESSION['user_id'] === $row["user_id"] || ($_SESSION["lvl_id"] != 1 && $row["lvl_id"] != 3)) {
         $delete_by_user_who_posted = '
         <button type="button" class="close delete_comment" id="' . $row['comment_id'] . '" aria-label="Close">
             <span aria-hidden="true">&times;</span>

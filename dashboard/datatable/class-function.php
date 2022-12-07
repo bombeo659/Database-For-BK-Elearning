@@ -130,8 +130,8 @@ class DTFunction
     public function insert_choice($question_ID, $is_correct, $choice)
     {
         try {
-            $sql = " INSERT INTO `room_test_choices` 
-            (`choice_ID`, `question_ID`, `is_correct`, `choice`)
+            $sql = " INSERT INTO `question_choices` 
+            (`choice_id`, `question_id`, `is_correct`, `choice`)
              VALUES (NULL, '$question_ID', '$is_correct', '$choice');";
             $statement = $this->runQuery($sql);
             $result = $statement->execute();
@@ -143,7 +143,7 @@ class DTFunction
     public function insert_question($question, $test_ID, $xtype)
     {
         try {
-            $sql = " INSERT INTO `room_test_questions` (`question_ID`, `test_ID`, `question`,`type`) 
+            $sql = " INSERT INTO `test_question` (`question_id`, `test_id`, `question`,`question_type`) 
             VALUES (NULL, $test_ID, '$question','$xtype');";
             $statement = $this->runQuery($sql);
             $result = $statement->execute();
@@ -156,8 +156,8 @@ class DTFunction
     public function setnewChoice($choice_ID, $newChoice)
     {
         try {
-            $sql = "UPDATE `room_test_choices` SET `choice` = '$newChoice' 
-                    WHERE `room_test_choices`.`choice_ID` = $choice_ID;";
+            $sql = "UPDATE `question_choices` SET `choice` = '$newChoice' 
+                    WHERE `question_choices`.`choice_id` = $choice_ID;";
             $statement = $this->runQuery($sql);
             $result = $statement->execute();
             return $result;
@@ -169,7 +169,7 @@ class DTFunction
     public function check_choice($choice_ID)
     {
         try {
-            $sql = " SELECT is_correct FROM `room_test_choices` WHERE choice_ID =  $choice_ID and is_correct = 1;";
+            $sql = " SELECT is_correct FROM `question_choices` WHERE choice_id = " . $choice_ID . " and is_correct = 1;";
             $statement = $this->runQuery($sql);
             $statement->execute();
             $result = $statement->rowCount();
@@ -182,9 +182,15 @@ class DTFunction
     public function test_score($score, $user_ID, $test_ID)
     {
         try {
-            $sql = "INSERT INTO `room_test_score` 
-            (`score_ID`, `test_ID`, `score`, `user_ID`) 
-            VALUES (NULL, '$test_ID', '$score', '$user_ID');";
+            $sql = "select * from `test_score` where test_id = " . $test_ID . " and user_id = " . $user_ID . ";";
+            $statement = $this->runQuery($sql);
+            $statement->execute();
+            $count1 = $statement->rowCount();
+            if ($count1 == 1) {
+                $sql = "update `test_score` set score = ".$score." where test_id = " . $test_ID . " and user_id = " . $user_ID . ";";
+            } else {
+                $sql = "INSERT INTO `test_score` (`test_id`, `score`, `user_id`) VALUES ('$test_ID', '$score', '$user_ID');";
+            }
             $statement = $this->runQuery($sql);
             $statement->execute();
             return $last_id = $this->conn->lastInsertId();
@@ -213,7 +219,7 @@ class DTFunction
 
     public function student_level()
     {
-        if ($_SESSION['lvl_ID'] == "1") {
+        if ($_SESSION['lvl_id'] == "1") {
             return true;
         } else {
             return false;
@@ -221,7 +227,7 @@ class DTFunction
     }
     public function instructor_level()
     {
-        if ($_SESSION['lvl_ID'] == "2") {
+        if ($_SESSION['lvl_id'] == "2") {
             return true;
         } else {
             return false;
@@ -229,22 +235,21 @@ class DTFunction
     }
     public function admin_level()
     {
-        if ($_SESSION['lvl_ID'] == "3") {
+        if ($_SESSION['lvl_id'] == "3") {
             return true;
         } else {
             return false;
         }
     }
 
-    public function subtopic($mtopic)
+    public function subtopic($topic)
     {
         try {
-            $sql = " SELECT * FROM `room_module_subtopic` WHERE mtopic_ID = '$mtopic'";
+            $sql = " SELECT * FROM `module_subtopic` WHERE topic_id = '$topic'";
             $statement = $this->runQuery($sql);
             $statement->execute();
 
             $result = $statement->fetchAll();
-            $atmp_count = 0;
             $li = "";
 
             foreach ($result as $row) {
@@ -252,12 +257,15 @@ class DTFunction
                     $btn = "";
                 } else {
                     $btn = '<div class="btn-group float-right" style="margin-top:-25px;">
-                    <button type="button" class="btn btn-secondary btn-sm rounded mr-1 edit_subtopic" sub-topic="' . $row["submtop_ID"] . '">Edit</button>
-                    <button type="button" class="btn btn-danger btn-sm rounded delete_subtopic" sub-topic="' . $row["submtop_ID"] . '">Delete</button> </div>';
+                    <button type="button" class="btn btn-secondary btn-sm rounded mr-1 edit_subtopic" sub-topic="' . $row["subtopic_id"] . '">Edit</button>
+                    <button type="button" class="btn btn-danger btn-sm rounded delete_subtopic" sub-topic="' . $row["subtopic_id"] . '">Delete</button> </div>';
                 }
-                $li .=  '<li class="list-group-item " >
-                <div class="view_subtopic" sub-topic="' . $row["submtop_ID"] . '">' 
-                    . $row["submtop_Title"] . '</div>' . $btn . 
+                $li .=  '
+                <li class="list-group-item " >
+                    <div class="view_subtopic" sub-topic="' . $row["subtopic_id"] . '">' 
+                    . $row["subtopic_title"] . 
+                    '</div>' 
+                    . $btn . 
                 '</li>';
             }
             return $li;

@@ -96,7 +96,7 @@ if (isset($_REQUEST['mod_ID'])) {
             ?>
             <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2"> <?php echo $auth_user->get_module_title($mod_ID) ?> </h1>
+                    <h1 class="h2"> <?php echo $auth_user->get_module_title($mod_ID, $this_room_ID) ?> </h1>
                 </div>
 
                 <div class="table-responsive">
@@ -107,10 +107,11 @@ if (isset($_REQUEST['mod_ID'])) {
                     // include('x-roomtab.php');
                     echo '<a type="button" class="btn btn-sm btn-secondary" 
                         href="room_module?room_ID=' . $room_ID . '">Back</a>';
+                    if($auth_user->admin_level() || $auth_user->instructor_level())
+                        echo '<button type="button" class="btn btn-sm btn-success add">
+                            Add Topic
+                        </button>'
                     ?>
-                    <button type="button" class="btn btn-sm btn-success add">
-                        Add Topic
-                    </button>
                     <button type="button" class="btn btn-sm btn-info float-right material">Module Files</button>
                     <br>
                     <table class="table table-borderless table-sm" id="topic_data">
@@ -148,7 +149,7 @@ if (isset($_REQUEST['mod_ID'])) {
                     <div class="modal-dialog modal-lg" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="m_subtopic_title">Add Topic</h5>
+                                <h5 class="modal-title" id="m_topic_title">Add Topic</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
@@ -180,7 +181,7 @@ if (isset($_REQUEST['mod_ID'])) {
                     <div class="modal-dialog modal-lg" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="m_subtopic_title">Add Subtopic</h5>
+                                <h5 class="modal-title" id="modal_subtopic_title">Add Subtopic</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
@@ -190,7 +191,7 @@ if (isset($_REQUEST['mod_ID'])) {
                                     <div class="form-row">
 
                                         <div class="form-group col-md-12">
-                                            <label for="subtopic_title">Topic<span class="text-danger">*</span></label>
+                                            <label for="subtopic_title">Title<span class="text-danger">*</span></label>
                                             <input type="text" class="form-control" id="subtopic_title" name="subtopic_title" placeholder="" value="" required="">
                                         </div>
                                         <div class="form-group col-md-12">
@@ -227,15 +228,16 @@ if (isset($_REQUEST['mod_ID'])) {
                                 } else {
                                 ?>
                                 <button type="button" class="btn btn-sm btn-success add_materials">Upload Files</button>
+                                <br><br>
                                 <?php
                                 }
                                 ?>
-                                <br><br>
                                 <table class="table table-striped table-sm" id="material_data">
                                     <thead>
                                         <tr>
                                             <th>#</th>
-                                            <th width="60%">Name</th>
+                                            <th></th>
+                                            <th width="50%">Name</th>
                                             <th>Type</th>
                                             <th></th>
                                         </tr>
@@ -327,7 +329,7 @@ if (isset($_REQUEST['mod_ID'])) {
                 var operation = $('#operation').val();
                 // alert(topic_title);
                 $.ajax({
-                    url: "load1.php",
+                    url: "datatable/room_module_topic/load.php",
                     method: 'POST',
                     data: {
                         action: operation,
@@ -337,6 +339,7 @@ if (isset($_REQUEST['mod_ID'])) {
                     },
                     dataType: "json",
                     complete: function(data) {
+                        alertify.alert(data.responseText).setHeader('Topic');
                         dataTable.ajax.reload();
                         $('#m_topic').modal("hide");
                     }
@@ -353,7 +356,7 @@ if (isset($_REQUEST['mod_ID'])) {
                 var operation1 = $('#operation1').val();
                 
                 $.ajax({
-                    url: "load1.php",
+                    url: "datatable/room_module_topic/load.php",
                     method: 'POST',
                     data: {
                         action: operation1,
@@ -365,7 +368,7 @@ if (isset($_REQUEST['mod_ID'])) {
                     },
                     dataType: "json",
                     complete: function(data) {
-
+                        alertify.alert(data.responseText).setHeader('Subtopic');
                         dataTable.ajax.reload();
                         $('#m_subtopicx').modal("hide");
                     }
@@ -389,7 +392,7 @@ if (isset($_REQUEST['mod_ID'])) {
                 $('#topic_ID').val(topic_ID);
 
                 $.ajax({
-                    url: "load1.php",
+                    url: "datatable/room_module_topic/load.php",
                     method: 'POST',
                     data: {
                         action: "get_topic",
@@ -399,7 +402,7 @@ if (isset($_REQUEST['mod_ID'])) {
                     // processData:false,   
                     dataType: "json",
                     success: function(data) {
-
+                        $('#m_topic_title').text("Edit Topic");
                         $('#m_topic').modal("show");
                         $("#topic_ID").val(data.mtopic_ID);
                         $("#topic_title").val(data.mtopic_Title);
@@ -409,24 +412,27 @@ if (isset($_REQUEST['mod_ID'])) {
             });
 
             $(document).on('click', '.delete_topic', function() {
-
                 var topic_ID = $(this).attr("id");
-                if (confirm("Are you sure you want to delete this topic?")) {
-                    $.ajax({
-                        url: "load1.php",
-                        method: 'POST',
-                        data: {
-                            action: "delete_topic",
-                            topic_ID: topic_ID
-                        },
-                        dataType: "json",
-                        complete: function(data) {
-                            dataTable.ajax.reload();
-                        }
-                    });
-                } else {
-                    return false;
-                }
+                alertify.confirm('Are you sure you want to delete this topic?',
+                    function() {
+                        $.ajax({
+                            url: "datatable/room_module_topic/load.php",
+                            method: 'POST',
+                            data: {
+                                action: "delete_topic",
+                                topic_ID: topic_ID
+                            },
+                            dataType: "json",
+                            complete: function(data) {
+                                alertify.alert(data.responseText).setHeader('Delete Topic');
+                                dataTable.ajax.reload();
+                            }
+                        });
+                    },
+                    function() {
+                        alertify.error('Cancel')
+                    }
+                ).setHeader('Delete Topic');
             });
 
 
@@ -434,6 +440,7 @@ if (isset($_REQUEST['mod_ID'])) {
                 var topicID = $(this).attr("id");
                 // alert(subtopicID);
                 $("#topic_ID").val(topicID);
+                $('#modal_subtopic_title').text("Add Subtopic");
                 $('#m_subtopicx').modal("show");
 
                 $('#subtopic_form')[0].reset();
@@ -447,7 +454,7 @@ if (isset($_REQUEST['mod_ID'])) {
                 var subtopic_ID = $(this).attr("sub-topic");
                 $('#m_subtopic').modal("show");
                 $.ajax({
-                    url: "load1.php",
+                    url: "datatable/room_module_topic/load.php",
                     method: 'POST',
                     data: {
                         action: "get_subtopic",
@@ -465,13 +472,14 @@ if (isset($_REQUEST['mod_ID'])) {
                 var subtopicID = $(this).attr("sub-topic");
                 // alert("Edit:"+subtopicID);
 
+                $('#modal_subtopic_title').text("Edit Subtopic");
                 $('#m_subtopicx').modal("show");
                 $('#operation1').val("update_subtopic");
                 $('#submit_tt').text("Update");
                 $('#submtop_ID').val(subtopicID);
 
                 $.ajax({
-                    url: "load1.php",
+                    url: "datatable/room_module_topic/load.php",
                     method: 'POST',
                     data: {
                         action: "get_subtopic",
@@ -484,61 +492,41 @@ if (isset($_REQUEST['mod_ID'])) {
                     }
                 });
             });
+
             $(document).on('click', '.delete_subtopic', function() {
                 var subtopicID = $(this).attr("sub-topic");
-                if (confirm("Are you sure you want to delete this subtopic?")) {
-                    $.ajax({
-                        url: "load1.php",
-                        method: 'POST',
-                        data: {
-                            action: "delete_subtopic",
-                            subtopicID: subtopicID
-                        },
-                        dataType: "json",
-                        complete: function(data) {
-                            dataTable.ajax.reload();
-                        }
-                    });
-                } else {
-                    return false;
-                }
+                alertify.confirm('Are you sure you want to delete this subtopic?',
+                    function() {
+                        $.ajax({
+                            url: "datatable/room_module_topic/load.php",
+                            method: 'POST',
+                            data: {
+                                action: "delete_subtopic",
+                                subtopicID: subtopicID
+                            },
+                            dataType: "json",
+                            complete: function(data) {
+                                alertify.alert(data.responseText).setHeader('Delete Subtopic');
+                                dataTable.ajax.reload();
+                            }
+                        });
+                    },
+                    function() {
+                        alertify.error('Cancel')
+                    }
+                ).setHeader('Delete Subtopic');
             });
 
             $(document).on('click', '.material', function() {
-                // var module_ID = $(this).attr("id");
                 var module_ID = <?php echo $mod_ID ?>;
-                // $('#module_modal_title').text('View Module');
                 $('#material_modal').modal('show');
-                // $("#submit_input").hide();
-
                 $('#module_IDx').val(module_ID);
                 material_data(module_ID);
-                // $('#material_data').DataTable().destroy();
-
-                // $.ajax({
-                //    url:"datatable/room_module/fetch_single.php",
-                //    method:'POST',
-                //    data:{action:"module_view",module_ID:module_ID},
-                //    dataType    :   'json',
-                //    success:function(data)
-                //    {
-
-                //    $("#module_title").prop("disabled", true);
-
-                //      $('#module_title').val(data.mod_Title);
-
-                //      $('#submit_input').hide();
-                //      $('#module_ID').val(module_ID);
-                //      $('#submit_input').text('View');
-                //      $('#submit_input').val('module_view');
-                //      $('#operation').val("module_view");
-
-                //    }
-                //  });
             });
 
             //************MATERIAL SCRIPT************//
             function material_data(mod_ID) {
+                $('#material_data').DataTable().destroy();
                 var materials_dataTable = $('#material_data').DataTable({
                     "processing": true,
                     "serverSide": true,
@@ -552,8 +540,9 @@ if (isset($_REQUEST['mod_ID'])) {
                         "targets": [0],
                         "orderable": false,
                     }, ],
-
                 });
+                materials_dataTable.columns([1]).visible(false);
+            
 
                 $(document).on('submit', '#material_form', function(event) {
                     event.preventDefault();
@@ -565,7 +554,7 @@ if (isset($_REQUEST['mod_ID'])) {
                         contentType: false,
                         processData: false,
                         success: function(data) {
-                            alertify.alert(data).setHeader('Room Files');
+                            alertify.alert(data).setHeader('Module Files');
                             $('#material_form')[0].reset();
                             $('#material_submit_modal').modal('hide');
                             materials_dataTable.ajax.reload();
@@ -575,10 +564,8 @@ if (isset($_REQUEST['mod_ID'])) {
                 });
 
                 $(document).on('click', '.add_materials', function() {
-
                     $('#material_submit_modal').modal('show');
                     materials_dataTable.ajax.reload();
-                    // questionaire_dataTable.ajax.reload();
 
                 });
 

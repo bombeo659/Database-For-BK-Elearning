@@ -144,7 +144,7 @@ $pageTitle = "Manage School Year";
                                                 <label for="semester_stat">Status<span class="text-danger">*</span></label>
                                                 <select class="form-control" id="semester_stat" name="semester_stat">
                                                     <option value="1">Activate</option>
-                                                    <option value="0">Deactivate</option>
+                                                    <option value="2">Deactivate</option>
                                                 </select>
                                             </div>
                                         </div>

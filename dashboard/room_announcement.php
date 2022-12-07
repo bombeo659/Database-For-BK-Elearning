@@ -101,9 +101,9 @@ $pageTitle = "Manage Classroom";
                     if (isset($_GET["room_ID"])) {
                         $room_ID = $_GET["room_ID"];
                     }
-                    if ($auth_user->student_level()) {
-                        $room_ID = 1;
-                    }
+                    // if ($auth_user->student_level()) {
+                    //     $room_ID = 1;
+                    // }
                     $rtab = "room_announcement";
                     $rtab_c = "Announcement";
                     include('x-roomtab.php');

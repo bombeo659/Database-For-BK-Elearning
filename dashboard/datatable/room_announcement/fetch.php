@@ -51,7 +51,7 @@ foreach ($result as $row) {
     $sub_array[] = $row["post_name"] . ' <span class="badge badge-info">' . $row["Posted_By"] . '<span>';
     $sub_array[] = $row["post_date"];
 
-    if ($_SESSION['user_id'] === $row["user_id"] || $_SESSION["lvl_ID"] == 3) {
+    if ($_SESSION['user_id'] === $row["user_id"] || $_SESSION["lvl_id"] == 3) {
         $edit_by_user_who_posted = '
 			<button type="button" class="btn btn-primary btn-sm mx-1 rounded edit"  user-id="' . $row["user_id"] . '" id="' . $row["post_id"] . '">Edit</button>
 

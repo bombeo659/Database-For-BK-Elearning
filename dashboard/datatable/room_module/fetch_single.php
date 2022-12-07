@@ -4,13 +4,13 @@ $room = new DTFunction();
 
 if (isset($_POST['action'])) {
     $output = array();
-    $stmt = $room->runQuery("SELECT * FROM `room_module` WHERE mod_ID  = '" . $_POST["module_ID"] . "' 
+    $stmt = $room->runQuery("SELECT * FROM `module` WHERE module_id  = '" . $_POST["module_ID"] . "' 
 			LIMIT 1");
     $stmt->execute();
     $result = $stmt->fetchAll();
     foreach ($result as $row) {
-        $output["module_ID"] = $row["mod_ID"];
-        $output["mod_Title"] = $row["mod_Title"];
+        $output["module_ID"] = $row["module_id"];
+        $output["mod_Title"] = ucwords(strtolower($row["module_title"]));
     }
 
     echo json_encode($output);

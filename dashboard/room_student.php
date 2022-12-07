@@ -273,7 +273,7 @@ if (isset($_REQUEST["room_ID"])) {
                 }, ],
 
             });
-            <?php if ($auth_user->student_level()) { ?>
+            <?php if ($auth_user->student_level() || $auth_user->instructor_level()) { ?>
                 dataTable.columns([6]).visible(false);
             <?php } ?>
             stud_dataTable.columns([1]).visible(false);

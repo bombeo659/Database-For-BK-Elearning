@@ -7,16 +7,16 @@ if (isset($_POST["operation"])) {
         try {
             $semester_start = $_POST["semester_start"];
             $semester_end = $_POST["semester_end"];
-            // $semester_stat = $_POST["semester_stat"];
-            $semester_stat = 0;
+            $semester_stat = $_POST["semester_stat"];
+            // $semester_stat = 0;
 
             if ($semester_stat == 1) {
-                $s1 = "UPDATE `ref_semester` SET `stat_ID` = '0'";
+                $s1 = "UPDATE `semester` SET `status_id` = '2'";
                 $st1 = $acadyear->runQuery($s1);
                 $rs1 = $st1->execute();
             }
 
-            $sql = "INSERT INTO `ref_semester` (`sem_ID`, `sem_start`, `sem_end`, `stat_ID`) 
+            $sql = "INSERT INTO `semester` (`sem_id`, `sem_start`, `sem_end`, `status_id`) 
 			VALUES (NULL, :semester_start, :semester_end, :semester_stat);";
             $statement = $acadyear->runQuery($sql);
 
@@ -42,18 +42,18 @@ if (isset($_POST["operation"])) {
         $semester_stat = $_POST["semester_stat"];
 
         if ($semester_stat == 1) {
-            $s1 = "UPDATE `ref_semester` SET `stat_ID` = '0'";
+            $s1 = "UPDATE `semester` SET `status_id` = '2'";
             $st1 = $acadyear->runQuery($s1);
             $rs1 = $st1->execute();
-            $s2 = "UPDATE `ref_semester` SET `stat_ID` = '1' WHERE `sem_ID` = $semester_ID; ";
+            $s2 = "UPDATE `semester` SET `status_id` = '1' WHERE `sem_id` = $semester_ID; ";
             $st2 = $acadyear->runQuery($s2);
             $rs2 = $st2->execute();
         }
 
-        $sql = "UPDATE `ref_semester` 
+        $sql = "UPDATE `semester` 
 		SET `sem_start` = :semester_start ,
 		`sem_end` = :semester_end 
-		WHERE sem_ID = :semester_ID";
+		WHERE sem_id = :semester_ID";
         $statement = $acadyear->runQuery($sql);
 
         $result = $statement->execute(
@@ -71,7 +71,7 @@ if (isset($_POST["operation"])) {
     if ($_POST["operation"] == "delete_semester") {
         try {
            $statement = $acadyear->runQuery(
-            "DELETE FROM `ref_semester` WHERE `sem_ID` = :sem_ID"
+            "DELETE FROM `semester` WHERE `sem_id` = :sem_ID"
             );
             $result = $statement->execute(
                 array(

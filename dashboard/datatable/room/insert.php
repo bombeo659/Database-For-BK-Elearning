@@ -53,12 +53,12 @@ if (isset($_POST["operation"])) {
             $class_name = $_POST["class_name"];
             $subject_ID = $_POST["subject_ID"];
 
-            $stmt1 = $class->runQuery("SELECT * FROM `class` WHERE `subject_id` = " .$subject_ID ." and `class_name` = '" .$class_name . "' LIMIT 1");
-            $stmt1->execute();
-            $rs = $stmt1->fetchAll();
-            if ($stmt1->rowCount() > 0) {
-                echo "You cannot add same Class name in same Subject";
-            } else {
+            // $stmt1 = $class->runQuery("SELECT * FROM `class` WHERE `subject_id` = " .$subject_ID ." and `class_name` = '" .$class_name . "' LIMIT 1");
+            // $stmt1->execute();
+            // $rs = $stmt1->fetchAll();
+            // if ($stmt1->rowCount() > 0) {
+            //     echo "You cannot add same Class name in same Subject";
+            // } else {
                 $q = "SELECT * FROM `semester` WHERE sem_id IN (select sem_id from `subject` where subject_id = " . $subject_ID . ")";
                 $s1 = $class->runQuery($q);
                 $s1->execute();
@@ -81,7 +81,7 @@ if (isset($_POST["operation"])) {
                 } else {
                     echo 'Failed! Some things wrong!';
                 }
-            }
+            // }
         } catch (PDOException $e) {
             echo "There is some problem in connection: " . $e->getMessage();
         }

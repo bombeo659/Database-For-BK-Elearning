@@ -110,6 +110,7 @@ if (isset($_REQUEST["room_ID"])) {
                         <thead>
                             <tr>
                                 <th>#</th>
+                                <th></th>
                                 <th>Name</th>
                                 <th>Type</th>
                                 <th>Date Added</th>
@@ -443,6 +444,7 @@ if (isset($_REQUEST["room_ID"])) {
             var dataTable = $('#activity_data').DataTable({
                 "processing": true,
                 "serverSide": true,
+                "ordering":false,
                 "order": [],
                 "ajax": {
                     url: "datatable/room_activity/fetch.php?room_ID=" + <?php echo $this_room_ID ?>,
@@ -452,8 +454,8 @@ if (isset($_REQUEST["room_ID"])) {
                     "targets": [0],
                     "orderable": false,
                 }, ],
-
             });
+            dataTable.columns([1]).visible(false);
             
             <?php
             if ($auth_user->student_level()) {

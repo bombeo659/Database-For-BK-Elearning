@@ -24,7 +24,18 @@ $rad = $auth_user->room_adviser($room_ID);
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb bcrum bg-dark">
         <li class="breadcrumb-item "><a href="index" class="bcrum_i_a">Dashboard</a></li>
-        <li class="breadcrumb-item "><a href="subject" class="bcrum_i_a"><?php echo $rad["subject_name"] . ' - ' . $rad["class_name"] ?></a></li>
+        <?php 
+            if($auth_user->admin_level()){
+                echo "<li class='breadcrumb-item'>
+                    <a href='subject' class='bcrum_i_a'>" . $rad["subject_name"] . " - " . $rad["class_name"] . " </a>
+                    </li>";
+            } else {
+                echo "<li class='breadcrumb-item'>
+                    <a href='room' class='bcrum_i_a'>" . $rad["subject_name"] . " - " . $rad["class_name"] . " </a>
+                    </li>";
+            }
+        ?>
+        
         <li class="breadcrumb-item active bcrum_i_ac" aria-current="page"><?php echo $rtab_c ?></li>
     </ol>
 </nav>

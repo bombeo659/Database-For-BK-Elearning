@@ -13,7 +13,7 @@ if (isset($_POST["operation"])) {
             $test_type = $_POST["test_type"];
             $test_status = $_POST["test_status"];
 
-            $sql = "INSERT INTO `room_test` (`test_ID`, `room_ID`, `test_Name`, `test_Added`, `test_Expired`, `test_Timer`, `status_ID`, `tstt_ID`) 
+            $sql = "INSERT INTO `test` (`test_id`, `class_id`, `test_name`, `test_added`, `test_expired`, `test_timer`, `status_id`, `tt_ID`) 
 			VALUES (NULL, :room_ID, :test_name, CURRENT_TIMESTAMP, :test_expired, :test_timer, :test_status, :test_type);";
             $statement = $account->runQuery($sql);
 
@@ -44,14 +44,14 @@ if (isset($_POST["operation"])) {
             $test_timer = $_POST["test_timer"];
             $test_type = $_POST["test_type"];
             $test_status = $_POST["test_status"];
-            $sql = "UPDATE `room_test` 
+            $sql = "UPDATE `test` 
 			SET 
-			`test_Name` = :test_name,
-			`test_Expired` = :test_expired,
-			`test_Timer` = :test_timer,
-			`status_ID` = :test_status,
-			`tstt_ID` = :test_type
-			 WHERE `test_ID` = :test_ID AND `room_ID` = :room_ID";
+			`test_name` = :test_name,
+			`test_expired` = :test_expired,
+			`test_timer` = :test_timer,
+			`status_id` = :test_status,
+			`tt_id` = :test_type
+			 WHERE `test_id` = :test_ID AND `class_id` = :room_ID";
             $statement = $account->runQuery($sql);
 
             $result = $statement->execute(
@@ -77,7 +77,7 @@ if (isset($_POST["operation"])) {
     if ($_POST["operation"] == "test_delete") {
         try {
             $statement = $account->runQuery(
-                "DELETE FROM `room_test` WHERE `test_ID` = :test_ID"
+                "DELETE FROM `test` WHERE `test_id` = :test_ID"
             );
             $result = $statement->execute(
                 array(
@@ -92,13 +92,13 @@ if (isset($_POST["operation"])) {
             echo "There is some problem in connection: " . $e->getMessage();
         }
     }
+
     if ($_POST["operation"] == "test_view") {
         try {
             $test_ID = $_POST["test_ID"];
-            $user_ID = $_SESSION["user_ID"];
+            $user_ID = $_SESSION["user_id"];
             $statement = $account->runQuery(
-                "SELECT * FROM `room_test_score` WHERE test_ID = :test_ID and user_ID = :user_ID 
-			ORDER BY `score_ID` DESC   LIMIT 1"
+                "SELECT * FROM `test_score` WHERE test_id = :test_ID and user_id = :user_ID LIMIT 1"
             );
             $statement->execute(
                 array(

@@ -6,23 +6,23 @@ session_start();
 $query = '';
 $output = array();
 $query .= "SELECT * ";
-$query .= " FROM `room_module_topic` rmt";
+$query .= " FROM `module_topic` rmt";
 
 if (isset($_REQUEST['mod_ID'])) {
     $mod_ID = $_REQUEST['mod_ID'];
-    $query .= ' WHERE rmt.mod_ID = ' . $mod_ID . ' AND';
+    $query .= ' WHERE rmt.module_id = ' . $mod_ID . ' AND';
 } else {
     $query .= ' WHERE';
 }
 if (isset($_POST["search"]["value"])) {
-    $query .= ' (mtopic_ID LIKE "%' . $_POST["search"]["value"] . '%" ';
-    $query .= ' OR mtopic_Title LIKE "%' . $_POST["search"]["value"] . '%" )';
+    // $query .= ' (mtopic_ID LIKE "%' . $_POST["search"]["value"] . '%" ';
+    $query .= ' ( topic_title LIKE "%' . $_POST["search"]["value"] . '%" )';
 }
 
 if (isset($_POST["order"])) {
     $query .= ' ORDER BY ' . $_POST['order']['0']['column'] . ' ' . $_POST['order']['0']['dir'] . ' ';
 } else {
-    $query .= ' ORDER BY mtopic_ID DESC ';
+    $query .= ' ORDER BY topic_id ASC ';
 }
 
 if ($_POST["length"] != -1) {
@@ -38,7 +38,7 @@ $i = 1;
 
 foreach ($result as $row) {
     $sub_array = array();
-    $subtopic = $room->subtopic($row["mtopic_ID"]);
+    // $subtopic = $room->subtopic($row["topic_id"]);
     if ($room->student_level()) {
         $btnx = '';
     } else {
@@ -48,39 +48,39 @@ foreach ($result as $row) {
             Action
             </button>
             <div class="dropdown-menu">
-                <a class="dropdown-item add_subtopic"  id="' . $row["mtopic_ID"] . '">Add Subtopic</a>
-                <a class="dropdown-item edit_topic"  id="' . $row["mtopic_ID"] . '">Edit</a>
+                <a class="dropdown-item add_subtopic"  id="' . $row["topic_id"] . '">Add Subtopic</a>
+                <a class="dropdown-item edit_topic"  id="' . $row["topic_id"] . '">Edit</a>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item delete_topic" id="' . $row["mtopic_ID"] . '">Delete</a>
+                <a class="dropdown-item delete_topic" id="' . $row["topic_id"] . '">Delete</a>
             </div>
         </div>
         ';  
     }
     $sub_array[] = '
     <div class="card">
-    <div class="card-header" id="heading' . $i . '">
-        <h5 class="mb-0">
-        <div >
-            ' . $row["mtopic_Title"] . '
-            ' . $btnx . '
+        <div class="card-header" id="heading' . $i . '">
+            <h5 class="mb-0">
+            <div >
+                ' . $row["topic_title"] . '
+                ' . $btnx . '
+            </div>
+            </h5>
         </div>
-        </h5>
-    </div>
 
-    <div id="collapse' . $i . '" class="collapse show" aria-labelledby="heading' . $i . '" data-parent="#accordionExample' . $i . '">
-        <div class="card-body">
-        <ul class="list-group list-group-flush">
-        ' . $room->subtopic($row["mtopic_ID"]) . '
-            </ul>
+        <div id="collapse' . $i . '" class="collapse show" aria-labelledby="heading' . $i . '" data-parent="#accordionExample' . $i . '">
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                ' . $room->subtopic($row["topic_id"]) . '
+                </ul>
+            </div>
         </div>
-    </div>
     </div>
     ';
     $i++;
     $data[] = $sub_array;
 }
 
-$q = "SELECT * FROM `room`";
+$q = "SELECT * FROM `class`";
 $filtered_rec = $room->get_total_all_records($q);
 
 $output = array(

@@ -19,7 +19,7 @@ if (isset($_POST["operation"])) {
                     ':post_title'        =>    $post_title,
                     ':post_content'      =>    $post_content,
                     ':class_ID'       =>    $class_ID,
-                    ':user_ID'        =>    $_SESSION["user_ID"],
+                    ':user_ID'        =>    $_SESSION["user_id"],
                 )
             );
             if (!empty($result)) {

@@ -397,6 +397,7 @@ $pageTitle = "Manage Classrooom";
                         $('#subject_form')[0].reset();
                         $('#subject_modal').modal('hide');
                         dataTable.ajax.reload();
+                        window.location.reload();
                     }
                 });
 

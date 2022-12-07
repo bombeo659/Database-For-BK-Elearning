@@ -6,29 +6,29 @@ $account = new DTFunction();           // Create new connection by passing in yo
 $query = '';
 $output = array();
 $query .= "SELECT crtq.*,
-(SELECT GROUP_CONCAT(crtc.choice_ID)  FROM `room_test_choices` `crtc` WHERE crtc.question_ID = crtq.question_ID) choice_ID,
-(SELECT GROUP_CONCAT(crtc.is_correct)  FROM `room_test_choices` `crtc` WHERE crtc.question_ID = crtq.question_ID) is_correct,
-(SELECT GROUP_CONCAT(crtc.choice)  FROM `room_test_choices` `crtc` WHERE crtc.question_ID = crtq.question_ID) choice";
+(SELECT GROUP_CONCAT(crtc.choice_id)  FROM `question_choices` `crtc` WHERE crtc.question_id = crtq.question_id) choice_ID,
+(SELECT GROUP_CONCAT(crtc.is_correct)  FROM `question_choices` `crtc` WHERE crtc.question_id = crtq.question_id) is_correct,
+(SELECT GROUP_CONCAT(crtc.choice)  FROM `question_choices` `crtc` WHERE crtc.question_id = crtq.question_id) choice";
 
-$query .= " FROM `room_test_questions` `crtq`";
+$query .= " FROM `test_question` `crtq`";
 
 if (isset($_REQUEST['test_ID']) || isset($_REQUEST['type'])) {
     $test_ID = $_REQUEST['test_ID'];
     $test_type = $_REQUEST['type'];
-    $query .= ' WHERE crtq.test_ID = ' . $test_ID . ' AND crtq.type = ' . $test_type . ' AND';
+    $query .= ' WHERE crtq.test_id = ' . $test_ID . ' AND crtq.question_type = ' . $test_type . ' AND ';
 } else {
     $query .= ' WHERE';
 }
 if (isset($_POST["search"]["value"])) {
-    $query .= ' (question_ID LIKE "%' . $_POST["search"]["value"] . '%" ';
-    $query .= ' OR test_ID LIKE "%' . $_POST["search"]["value"] . '%" ';
-    $query .= ' OR question LIKE "%' . $_POST["search"]["value"] . '%" )';
+    // $query .= ' (question_ID LIKE "%' . $_POST["search"]["value"] . '%" ';
+    // $query .= ' ( test_ID LIKE "%' . $_POST["search"]["value"] . '%" ';
+    $query .= ' ( question LIKE "%' . $_POST["search"]["value"] . '%" )';
 }
 
 if (isset($_POST["order"])) {
     $query .= ' ORDER BY ' . $_POST['order']['0']['column'] . ' ' . $_POST['order']['0']['dir'] . ' ';
 } else {
-    $query .= ' ORDER BY question_ID ASC ';
+    $query .= ' ORDER BY question_id ASC ';
 }
 if ($_POST["length"] != -1) {
     $query .= ' LIMIT ' . $_POST['start'] . ', ' . $_POST['length'];
@@ -79,9 +79,9 @@ foreach ($result as $row) {
     <div class="btn-group float-right">
         <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action </button>
         <div class="dropdown-menu">
-            <a class="dropdown-item ' . $xas0 . '"  id="' . $row["question_ID"] . '">Edit</a>
+            <a class="dropdown-item ' . $xas0 . '"  id="' . $row["question_id"] . '">Edit</a>
                 <div class="dropdown-divider"></div>
-            <a class="dropdown-item ' . $xas1 . '" id="' . $row["question_ID"] . '">Delete</a>
+            <a class="dropdown-item ' . $xas1 . '" id="' . $row["question_id"] . '">Delete</a>
         </div>
     </div>
 
@@ -96,7 +96,7 @@ foreach ($result as $row) {
     $data[] = $sub_array;
 }
 
-$q = "SELECT * FROM `room_test`";
+$q = "SELECT * FROM `test`";
 $filtered_rec = $account->get_total_all_records($q);
 
 $output = array(

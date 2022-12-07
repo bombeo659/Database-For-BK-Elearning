@@ -81,7 +81,9 @@ $pageTitle = "Dashboard";
                                     <strong>MISSION</strong>
                                 </div>
                                 <div class="card-body text-center" style="min-height: 250px">
-                                    MISSION HERE
+                                    <h5>Training human resources of international quality.</h5> <br>
+                                    <h5>Create new knowledge through scientific research - technology transfer, start-up - innovation.</h5> <br>
+                                    <h5>Performing social responsibility and serving the community.</h5>
                                 </div>
                             </div>
                         </div>
@@ -91,7 +93,7 @@ $pageTitle = "Dashboard";
                                     <strong>VISION</strong>
                                 </div>
                                 <div class="card-body text-center" style="min-height: 250px">
-                                    VISION HERE
+                                    <h5>Globally recognized as the leading university in the region for teaching, learning, research and entrepreneurship - innovation.</h5>
                                 </div>
                             </div>
                         </div>
