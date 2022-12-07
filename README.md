@@ -1,31 +1,35 @@
 # Bach Khoa E-Learning
  
 
-**Bach Khoa E-Learning .** It was developed with [Bootstrap 4.x Framework](http://getbootstrap.com)
+**Bach Khoa E-Learning.**
 
+It was developed with [PHP 7.x](https://www.php.net/) and [Bootstrap 4.x Framework](http://getbootstrap.com)
 
-Installation
-----------------
+## Requirements 
+- MariaDB 10.4.25 / MySQL 8.0.28
+- phpMyAdmin 4.9.2 
+- Apache 2.4.54 
+- PHP 7.4.30
+
+## Installation
 **GitHub**
 - Fork the repository ([here is the guide](https://help.github.com/articles/fork-a-repo/)).
 - Clone to your machine
 ```
 git clone https://github.com/bombeo659/Database-For-BK-Elearning.git
 ```
-**Note**
- - Create database
+**How to run**
+ - Create database in MySQL with script:
  ```DIR 
  db\bk-elearning.sql 
  ```
- - You must be modify some infomation about local server
+ - Put folder Database-For-BK-Elearning after clone from git in "C:\xampp\htdocs"
+ - You must be modify some infomation about local server in file:
  ```DIR 
  db-config.php 
  ```
-## Requirements 
-- MariaDB 10.4.25 / MySQL 8.0.28
-- phpMyAdmin 4.9.2 
-- Apache 2.4.54 
-- PHP 7.4.30
+ - Open the XAMPP control panel and start Apache to host the local webserver
+ - Now navigate to your browser and type in "localhost/Database-For-BK-Elearning/" in the address bar to view the output
 
 ## Demo credentials 
 | Username       | Password       | Type           |
@@ -36,7 +40,7 @@ git clone https://github.com/bombeo659/Database-For-BK-Elearning.git
 |1915886         |123             | student        |
 
 
-Browser Support
+## Browser Support
 ----------
 - Microsoft Edge (Latest)
 - Mozilla Firefox (Latest)
@@ -45,7 +49,7 @@ Browser Support
 - Safari (Latest)
 - Brave (Latest)
 
-Change Logs
+## Change Logs
 ----------
 See  **[commits](https://github.com/bombeo659/Database-For-BK-Elearning/commits/main)**
 
