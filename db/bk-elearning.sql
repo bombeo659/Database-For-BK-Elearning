@@ -286,7 +286,5 @@ INSERT INTO `bk_elearning`.`subject` (`subject_id`, `subject_name`, `sem_id`, `f
 
 ALTER TABLE class ADD ind_id integer not null;
 ALTER TABLE class ADD constraint c_fk4 FOREIGN KEY (ind_id) references instructor_details(ind_id);
-
-INSERT INTO `bk_elearning`.`class` (`class_id`, `subject_id`, `status_id`, `ind_id`) VALUES ('1', '1', '1', '1');
-
 alter table class add column class_name varchar(30);
+INSERT INTO `bk_elearning`.`class` (`class_id`, `class_name`, `subject_id`, `status_id`, `ind_id`) VALUES ('1', 'L01', '1', '1', '1');
